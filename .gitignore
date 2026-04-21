@@ -1,2 +1,7 @@
 .idea/
 .env
+#SECRET KEY - if this gets commit your key is exposed to the internet .env
+
+#Virtual environment - thousands of files, not needed in git .venv/
+
+#Python automatically creates these cache files -not needed __pycache__/ 
