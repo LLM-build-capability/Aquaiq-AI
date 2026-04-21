@@ -3,12 +3,19 @@ name = "aquaiq-ai"
 version = "0.1.0"
 description = ""
 authors = [
-    {name = "Your Name",email = "you@example.com"}
+    {name = "Prem Kumar Reddy",email = "premkumarreddy.kothakapu@ecolab.com"}
 ]
 readme = "README.md"
 requires-python = ">=3.14"
 dependencies = [
-    "pandas (>=3.0.2,<4.0.0)"
+    "pandas (>=3.0.2,<4.0.0)",
+    "requests (>=2.33.1,<3.0.0)",
+    "openai (>=2.32.0,<3.0.0)",
+    "chromadb (>=1.5.8,<2.0.0)",
+    "python-dotenv (>=1.2.2,<2.0.0)",
+    "pydantic (>=2.13.3,<3.0.0)",
+    "rich (>=15.0.0,<16.0.0)",
+    "pypdf (>=6.10.2,<7.0.0)"
 ]
 
 [tool.poetry]
