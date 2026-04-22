@@ -32,7 +32,7 @@ def load_docs():
     docs = []
     files = os.listdir(DATA_PATH)
 
-    print(f"Found {len(files)} files")
+    print(f"Found {len(files)} files")ggi
 
     for file in files:
         if file.startswith("."):
