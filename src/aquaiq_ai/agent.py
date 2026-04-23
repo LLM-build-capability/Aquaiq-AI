@@ -1,12 +1,12 @@
 import os
 from dotenv import load_dotenv
 from openai import AzureOpenAI
-from app.retriever import retrieve
-from app.tools import get_air_quality
+from src.aquaiq_ai.retriever import retrieve
+from src.aquaiq_ai.tools import get_air_quality
 load_dotenv()
 
 client = AzureOpenAI(
-   api_version="2024-12-01-preview",
+   api_version=os.getenv("API_VERSION"),
    azure_endpoint=os.getenv("AZURE_OPENAI_ENDPOINT"),
    api_key=os.getenv("AZUREOPENAIAPI_KEY"),
 )
@@ -54,7 +54,7 @@ Rules:
    )
    answer = response.choices[0].message.content
    if sources:
-       answer += "\n\n📚 Sources:\n"
+       answer += "\n\nSources:\n"
        for s in sources:
            answer += f"- {s}\n"
    return answer
