@@ -1,4 +1,4 @@
-from app.agent import run_agent
+from src.aquaiq_ai.agent import run_agent
 
 def main():
    messages = []
