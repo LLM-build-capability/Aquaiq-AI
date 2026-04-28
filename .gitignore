@@ -1,6 +1,5 @@
 .idea/
 .env
-db/
 
 .venv/
 
@@ -9,9 +8,8 @@ __pycache__/
 *.pyo
 
 chroma_db/
-*.lance/
+
 *.faiss
 .DS_Store
-*.egg-info/
-dist/
+
 .pytest_cache/
