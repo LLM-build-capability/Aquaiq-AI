@@ -11,5 +11,6 @@ chroma_db/
 
 *.faiss
 .DS_Store
+.streamlit
 
 .pytest_cache/
