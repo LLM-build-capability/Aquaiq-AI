@@ -6,7 +6,7 @@ from dotenv import load_dotenv
 
 from src.aquaiq_ai.embedding_helper import AzureEmbedder
 
-# This path stuff is annoying but necessary
+# getting same path problem like ingest file. so added 3 dirname again.
 sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__)))))
 load_dotenv()
 
@@ -37,10 +37,10 @@ class WaterDocRetriever:
             print("Run ingest.py first to build the database.")
 
     def _expand_query(self, query):
-
+        # Added some related terms
         query_lower = query.lower()
 
-        # I added these after testing - the model kept missing certain terms
+        # I added these after testing because the model kept missing certain terms
         expansions = {
             "clean": "treatment purification disinfection",
             "chlorine": "chlorination disinfection",
@@ -59,6 +59,7 @@ class WaterDocRetriever:
         return query
 
     def get_context(self, query):
+        # Get relevant text chunks for the user's question.
         if not self.available:
             return ""
 
@@ -85,6 +86,7 @@ class WaterDocRetriever:
             print("  No results found.")
             return ""
 
+        # Format the results
         context_parts = []
         for i, doc in enumerate(results['documents'][0]):
             meta = results['metadatas'][0][i]

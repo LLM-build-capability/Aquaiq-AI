@@ -6,6 +6,8 @@ from dotenv import load_dotenv
 
 load_dotenv()
 
+# I tried to make this a simple wrapper but then added retry logic because Azure is hitting rate limits
+
 class AzureEmbedder:
     def __init__(self):
         self.client = AzureOpenAI(
@@ -14,9 +16,11 @@ class AzureEmbedder:
             azure_endpoint=os.getenv("AZURE_OPENAI_ENDPOINT")
         )
         self.model = os.getenv("AZURE_OPENAI_EMBEDDING")
+        # 3 retries seems to work most of the time
         self.max_retries = 3
 
     def embed(self, text):
+        # Just one text at a time, simpler this way
         for attempt in range(self.max_retries):
             try:
                 response = self.client.embeddings.create(
@@ -27,12 +31,13 @@ class AzureEmbedder:
             except Exception as e:
                 print(f"Embedding failed (attempt {attempt + 1}): {e}")
                 if attempt < self.max_retries - 1:
-                    time.sleep(2)
+                    time.sleep(2)  # Wait a bit before retry
                 else:
                     raise
         return None
 
     def embed_batch(self, texts):
+        # Multiple texts at once - faster for ingestion
         for attempt in range(self.max_retries):
             try:
                 response = self.client.embeddings.create(
