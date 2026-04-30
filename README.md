@@ -343,16 +343,25 @@ During a chat session, the assistant prints internal classification steps (RAG s
  
 ## Results and Example Queries
 ### RAG Query Example:
-![RAG Query Response](images/RAG query.png)
-* The agent answers from the PDF documents without calling an external API.
+<p align='center'>
+ <img src="images/RAG query.png" width ="800"/>
+</p>
+
+- The agent answers from the PDF documents without calling an external API.
 
 ### Tool Qery Example:
-![ query and Solution](images/API tool query.png)
-* The agent calls the USGS water quality API and returns real monitoring site data.
+<p align='center'>
+ <img src="images/API tool query.png" width ="800"/>
+</p>
+
+- The agent calls the USGS water quality API and returns real monitoring site data.
 
 ### Agent Decision Logs (Terminal):
-![Console Output](images/CMD output.png)
-* The terminal shows similarity scores and the final query type classification for debugging.
+<p align='center'>
+ <img src="images/CMD output.png" width ="800"/>
+</p>
+
+- The terminal shows similarity scores and the final query type classification for debugging.
 
 ## Limitations
 - The agent’s routing relies on a fixed set of example questions; new domains may require updating the examples.
@@ -369,4 +378,4 @@ During a chat session, the assistant prints internal classification steps (RAG s
 - USGS Water Quality Portal for open access to water quality monitoring data
 - ChromaDB and Streamlit open‑source communities
 - Python ecosystem (PyPDF, NumPy, pandas, requests, etc.)
-- Course instructors and bootcamp leads for guidance and infrastructure support
+- bootcamp leader for guidance and infrastructure support
