@@ -6,7 +6,7 @@
   </font>
 </p>
  
-**Author:**
+**Authors:**
 - Prem Kumar Reddy K
 - Deepak P
 - Pavitra P
@@ -89,14 +89,15 @@ aqua-project/
 ├── tests/
 │   ├── __init__.py
 │   ├── complete_tests.py
+├── docs/
+│   └── writeup.md
 ├── application.py
 ├── chroma_db/     # Vector Database
 ├── .env.example
 ├── .gitignore
 ├── README.md
 ├── poetry.lock
-├── myproject.toml
-└── writeup.md
+└── myproject.toml
 
 ```
 ---
@@ -321,7 +322,7 @@ This will chunk the PDFs, create embeddings, and store them in ChromaDB.
  
 3. Launch the Streamlit app
    ```bash
-   poetry run streamlit run app.py
+   poetry run streamlit run application.py
    ```
 4. Interact – type your question in the chat box. The agent will automatically decide whether to search documents, call the water quality API, or do both.
 
