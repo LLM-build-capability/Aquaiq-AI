@@ -8,7 +8,7 @@
 |**System:** |Borrowing a physical book from a public library using a library card.|
 ## System overview
  
-The system supports a **Patron** (library user) and a **Librarian** to complete a book borrowing transaction. The core business service is **Borrow a Book**. The business process **Borrow Book Process** cover: searching for a book, checking its availability, borrowing it, and optionally paying a fine. The library uses a card-based identification system (library card) to authorise each transaction. 
+The system supports a **Patron** (library user) and a **Librarian** to complete a book borrowing transactions. The core business service is **Borrow a Book**. The business process **Borrow Book Process** covers: searching for a book, checking its avaliability, borrowing it, and optionally paying a fine. The library uses a card-based identification system (library card) to authorise each transaction.
 ## Business layer
  
 The Patron and Librarian are both **assigned** to the Borrow a Book service. There is also a **Library Membership** object, and I used a **composition** relationship from Patron to Membership – just to meet the assignment requirement (it feels a little forced, but it works). The Borrow Book Process **realises** the Borrow a Book service. The process **accesses** two business objects: **Book Record** and **Patron Record**.
