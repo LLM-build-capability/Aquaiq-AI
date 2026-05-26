@@ -25,3 +25,5 @@ exercise-c/dist/
 exercise-c/**/*.db
 exercise-c/dead-letter.jsonl
 exercise-c/**/chroma_db/
+
+TEAM_ONBOARDING.md
