@@ -14,3 +14,5 @@ chroma_db/
 .streamlit
 
 .pytest_cache/
+
+TEAM_ONBOARDING.md
