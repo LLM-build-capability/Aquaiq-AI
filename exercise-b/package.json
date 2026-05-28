@@ -6,7 +6,8 @@
   "scripts": {
     "start": "tsx src/index.ts",
     "typecheck": "tsc --noEmit",
-    "count-tokens": "tsx scripts/count-tokens.ts"
+    "count-tokens": "tsx scripts/count-tokens.ts",
+    "smoke": "tsx scripts/smoke.ts"
   },
   "engines": {
     "node": ">=22"
