@@ -1,0 +1,24 @@
+{
+  "name": "tech-radar-mcp",
+  "version": "0.1.0",
+  "description": "Code-Mode MCP server for Stack.TechRadar — Exercise B (V2)",
+  "type": "module",
+  "scripts": {
+    "start": "tsx src/index.ts",
+    "typecheck": "tsc --noEmit",
+    "count-tokens": "tsx scripts/count-tokens.ts"
+  },
+  "engines": {
+    "node": ">=22"
+  },
+  "dependencies": {
+    "@modelcontextprotocol/sdk": "1.29.0",
+    "isolated-vm": "6.1.2"
+  },
+  "devDependencies": {
+    "@types/node": "^22.0.0",
+    "tiktoken": "1.0.22",
+    "tsx": "^4.19.0",
+    "typescript": "^5.5.0"
+  }
+}
