@@ -16,3 +16,14 @@ chroma_db/
 .pytest_cache/
 
 TEAM_ONBOARDING.md
+
+# Exercise A — local model artifacts
+*.gguf
+*.tar.gz
+.ollama/
+models/
+
+# Exercise A — comparison run output (may contain corpus excerpts)
+*.csv
+data/comparison-results/
+data/latency*.json
