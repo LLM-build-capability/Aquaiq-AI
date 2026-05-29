@@ -1,16 +1,69 @@
+# ── IDE ──────────────────────────────────────────────────────────────────────
 .idea/
+.vscode/
+
+# ── Environment & secrets ─────────────────────────────────────────────────────
 .env
+.env.*
+!.env.example
 
+# ── Python (Exercise A) ───────────────────────────────────────────────────────
 .venv/
-
 __pycache__/
 *.pyc
 *.pyo
-
-chroma_db/
-
-*.faiss
-.DS_Store
-.streamlit
-
+*.pyd
+*.egg-info/
+dist/
+build/
+.eggs/
+site/
 .pytest_cache/
+.coverage
+htmlcov/
+.mypy_cache/
+.ruff_cache/
+
+# ── ChromaDB / vector stores ──────────────────────────────────────────────────
+chroma_db/
+chroma_db_local/
+*.faiss
+*.index
+
+# ── HuggingFace / sentence-transformers cache (Exercise A local embeddings) ───
+.cache/huggingface/
+sentence_transformers_cache/
+
+# ── Ollama / model weights — never commit ─────────────────────────────────────
+*.gguf
+*.ggml
+*.bin
+ollama_models/
+
+# ── Node.js (Exercise B) ──────────────────────────────────────────────────────
+node_modules/
+*.js.map
+*.d.ts.map
+
+# ── TypeScript build output ───────────────────────────────────────────────────
+exercise-b/dist/
+exercise-c/dist/
+
+# ── Exercise C — A2A orchestration ────────────────────────────────────────────
+docker-compose.override.yml
+*.log
+logs/
+traces/
+jaeger-data/
+tempo-data/
+grafana-data/
+*.checkpoint
+*.partial
+
+# ── macOS ─────────────────────────────────────────────────────────────────────
+.DS_Store
+.AppleDouble
+.LSOverride
+
+# ── Streamlit ─────────────────────────────────────────────────────────────────
+.streamlit
