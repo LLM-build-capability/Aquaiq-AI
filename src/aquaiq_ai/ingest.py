@@ -142,18 +142,24 @@ def process_batch(batch_items):
         print(f" Batch embedding failed: {e}")
         return [], [], [], []
 
-    ids = [str(uuid.uuid4()) for _ in batch_items]
-
-    metadatas = []
-    for item in batch_items:
-        metadatas.append({
+    # OllamaEmbedder may return None for chunks that still fail per-item
+    # (e.g. exceed the embedder's context window). Drop those so the rest
+    # of the batch is still stored.
+    kept_texts, kept_embeds, kept_ids, kept_metas = [], [], [], []
+    for item, text, emb in zip(batch_items, texts, embeddings):
+        if emb is None:
+            continue
+        kept_texts.append(text)
+        kept_embeds.append(emb)
+        kept_ids.append(str(uuid.uuid4()))
+        kept_metas.append({
             "source": item["source"],
             "chunk_index": item["idx"],
             "total_chunks": item["total"],
-            "chunk_size": len(item["text"])
+            "chunk_size": len(item["text"]),
         })
 
-    return texts, embeddings, ids, metadatas
+    return kept_texts, kept_embeds, kept_ids, kept_metas
 
 
 def run_ingestion():

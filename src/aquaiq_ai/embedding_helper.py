@@ -98,6 +98,15 @@ class OllamaEmbedder:
                 print(f"Ollama batch embedding failed (attempt {attempt + 1}): {e}")
                 if attempt < self.max_retries - 1:
                     time.sleep(2)
-                else:
-                    raise
-        return []
+        # Per-item fallback: at least one chunk in the batch likely exceeds the
+        # embedder's context window. Try each chunk alone — return None for the
+        # ones that still fail so the caller can drop them and keep the rest.
+        results = []
+        for t in texts:
+            try:
+                response = self.client.embeddings.create(model=self.model, input=[t])
+                results.append(response.data[0].embedding)
+            except Exception as e:
+                print(f"  Per-item embed failed (chunk dropped): {str(e)[:120]}")
+                results.append(None)
+        return results
