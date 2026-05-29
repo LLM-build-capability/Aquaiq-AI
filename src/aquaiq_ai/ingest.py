@@ -11,7 +11,7 @@ from dotenv import load_dotenv
 from concurrent.futures import ThreadPoolExecutor, as_completed
 import sys
 
-from src.aquaiq_ai.embedding_helper import AzureEmbedder
+from src.aquaiq_ai.config import get_embedder, get_collection_name, get_profile
 
 load_dotenv()
 
@@ -29,8 +29,11 @@ DB_PATH = os.path.join(BASE_DIR, os.getenv("CHROMA_PERSIST_DIR", "chroma_db"))
 CHUNK_SIZE = int(os.getenv("RAG_CHUNK_SIZE", "800"))
 OVERLAP_SENTENCES = int(os.getenv("RAG_CHUNK_OVERLAP_SENTENCES", "2"))
 
+COLLECTION_NAME = get_collection_name()
+print(f"Profile: {get_profile()} | Collection: {COLLECTION_NAME}")
+
 print("Loading embedder...")
-embedder = AzureEmbedder()
+embedder = get_embedder()
 
 print("Setting up ChromaDB...")
 chroma = chromadb.Client(Settings(persist_directory=DB_PATH, is_persistent=True))
@@ -38,21 +41,21 @@ chroma = chromadb.Client(Settings(persist_directory=DB_PATH, is_persistent=True)
 # Checks if database is already present or not
 existing = None
 try:
-    existing = chroma.get_collection("water_rag")
+    existing = chroma.get_collection(COLLECTION_NAME)
 except:
     pass
 
 if existing is not None:
     count = existing.count()
-    print(f"\nDATABASE ALREADY EXISTS with {count} chunks!")
-    print("   To re-ingest, delete the 'chroma_db' folder manually and run again.")
+    print(f"\nCollection '{COLLECTION_NAME}' ALREADY EXISTS with {count} chunks!")
+    print(f"   To re-ingest, delete the '{COLLECTION_NAME}' collection manually and run again.")
     print("\nExiting without making changes.")
     import sys
 
     sys.exit(0)
-print("No existing database found. Creating new collection...")
-collection = chroma.create_collection(name="water_rag")
-print("Created new collection")
+print(f"No existing collection '{COLLECTION_NAME}' found. Creating...")
+collection = chroma.create_collection(name=COLLECTION_NAME)
+print(f"Created new collection '{COLLECTION_NAME}'")
 
 
 def load_pdfs():

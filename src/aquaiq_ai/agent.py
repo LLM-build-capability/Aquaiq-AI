@@ -5,11 +5,10 @@ import numpy as np
 
 sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__)))))
 
-from openai import AzureOpenAI
 from dotenv import load_dotenv
 
+from src.aquaiq_ai.config import get_llm_client, get_llm_model, get_embedder, get_profile
 from src.aquaiq_ai.retriever import WaterDocRetriever
-from src.aquaiq_ai.embedding_helper import AzureEmbedder
 from src.aquaiq_ai.tools import WATER_QUALITY_TOOL, execute_water_quality_tool
 
 load_dotenv()
@@ -17,18 +16,14 @@ load_dotenv()
 
 class WaterAgent:
     def __init__(self):
-        # Set up Azure client
-        self.client = AzureOpenAI(
-            api_key=os.getenv("AZURE_OPENAI_API_KEY"),
-            api_version=os.getenv("API_VERSION"),
-            azure_endpoint=os.getenv("AZURE_OPENAI_ENDPOINT")
-        )
-        self.chat_model = os.getenv("AZURE_OPENAI_DEPLOYMENT")
+        # LLM client + embedder resolved by profile (LLM_PROFILE=local|cloud).
+        print(f"Profile: {get_profile()}")
+        self.client = get_llm_client()
+        self.chat_model = get_llm_model()
         self.max_tool_calls = int(os.getenv("MAX_TOOL_ITERATIONS", "3"))
         self.temperature = float(os.getenv("LLM_TEMPERATURE", "0.7"))
 
-        # Using the same embedder everywhere
-        self.embedder = AzureEmbedder()
+        self.embedder = get_embedder()
         self.retriever = WaterDocRetriever()
         self.tools = [WATER_QUALITY_TOOL]
 

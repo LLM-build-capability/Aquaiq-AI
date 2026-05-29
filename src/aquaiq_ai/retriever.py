@@ -4,7 +4,7 @@ import chromadb
 from chromadb.config import Settings
 from dotenv import load_dotenv
 
-from src.aquaiq_ai.embedding_helper import AzureEmbedder
+from src.aquaiq_ai.config import get_embedder, get_collection_name
 
 # getting same path problem like ingest file. so added 3 dirname again.
 sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__)))))
@@ -21,19 +21,20 @@ TOP_K = int(os.getenv("RAG_TOP_K", "5"))  # I increased from 3 to 5 for better r
 
 class WaterDocRetriever:
     def __init__(self):
-        self.embedder = AzureEmbedder()
+        self.embedder = get_embedder()
         self.client = chromadb.Client(Settings(
             persist_directory=DB_PATH,
             is_persistent=True
         ))
+        collection_name = get_collection_name()
         try:
-            self.collection = self.client.get_collection("water_rag")
+            self.collection = self.client.get_collection(collection_name)
             num_chunks = self.collection.count()
             self.available = num_chunks > 0
-            print(f"Retriever ready. Found {num_chunks} chunks in database.")
+            print(f"Retriever ready. Found {num_chunks} chunks in '{collection_name}'.")
         except Exception as e:
             self.available = False
-            print(f"Retriever error: {e}")
+            print(f"Retriever error (collection '{collection_name}'): {e}")
             print("Run ingest.py first to build the database.")
 
     def _expand_query(self, query):
