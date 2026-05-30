@@ -1,0 +1,105 @@
+{
+  "description": "Phase 6 benchmark query set for Exercise A — runs identically against LLM_PROFILE=cloud and LLM_PROFILE=local. Categories: rag (corpus), tool (USGS lookup), hybrid (corpus + tool), out_of_scope (corpus has nothing).",
+  "queries": [
+    {
+      "id": "rag-01",
+      "category": "rag",
+      "query": "What are the EPA limits for lead in drinking water?"
+    },
+    {
+      "id": "rag-02",
+      "category": "rag",
+      "query": "Explain how coagulation and flocculation work in water treatment."
+    },
+    {
+      "id": "rag-03",
+      "category": "rag",
+      "query": "What are the WHO guidelines for arsenic in drinking water?"
+    },
+    {
+      "id": "rag-04",
+      "category": "rag",
+      "query": "Describe the role of sedimentation in conventional water treatment."
+    },
+    {
+      "id": "rag-05",
+      "category": "rag",
+      "query": "How does chlorination disinfect water and what are its byproducts?"
+    },
+    {
+      "id": "rag-06",
+      "category": "rag",
+      "query": "What is membrane filtration and when is it used over conventional filtration?"
+    },
+    {
+      "id": "rag-07",
+      "category": "rag",
+      "query": "Summarise the main findings of the UN World Water Development Report on global water scarcity."
+    },
+    {
+      "id": "rag-08",
+      "category": "rag",
+      "query": "What is the EPA Maximum Contaminant Level Goal (MCLG) and how does it differ from the MCL?"
+    },
+    {
+      "id": "tool-01",
+      "category": "tool",
+      "query": "What is the latest water quality data for Travis County?"
+    },
+    {
+      "id": "tool-02",
+      "category": "tool",
+      "query": "Get nitrate levels for Williamson County."
+    },
+    {
+      "id": "tool-03",
+      "category": "tool",
+      "query": "Show me pH measurements for Benton County."
+    },
+    {
+      "id": "tool-04",
+      "category": "tool",
+      "query": "What are the dissolved oxygen readings in Baxter County?"
+    },
+    {
+      "id": "tool-05",
+      "category": "tool",
+      "query": "Fetch water quality data for Prince George County."
+    },
+    {
+      "id": "tool-06",
+      "category": "tool",
+      "query": "Are there any contamination readings for Oklahoma County?"
+    },
+    {
+      "id": "hybrid-01",
+      "category": "hybrid",
+      "query": "What is the EPA limit for nitrate in drinking water, and what are the current nitrate levels in Williamson County?"
+    },
+    {
+      "id": "hybrid-02",
+      "category": "hybrid",
+      "query": "Compare WHO guidelines for lead with the latest lead readings reported for Travis County."
+    },
+    {
+      "id": "hybrid-03",
+      "category": "hybrid",
+      "query": "Explain why pH matters in drinking water and report the most recent pH values for Benton County."
+    },
+    {
+      "id": "hybrid-04",
+      "category": "hybrid",
+      "query": "Describe how dissolved oxygen affects water quality and provide current readings for Baxter County."
+    },
+    {
+      "id": "oos-01",
+      "category": "out_of_scope",
+      "query": "What is the capital of France and what is its population?"
+    },
+    {
+      "id": "oos-02",
+      "category": "out_of_scope",
+      "query": "Who won the FIFA World Cup in 2022?"
+    }
+  ]
+}
