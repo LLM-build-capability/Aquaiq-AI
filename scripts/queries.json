@@ -1,5 +1,5 @@
 {
-  "description": "Phase 6 benchmark query set for Exercise A — runs identically against LLM_PROFILE=cloud and LLM_PROFILE=local. Categories: rag (corpus), tool (USGS lookup), hybrid (corpus + tool), out_of_scope (corpus has nothing).",
+  "description": "Benchmark query set for Exercise A — runs identically against LLM_PROFILE=cloud and LLM_PROFILE=local. Categories: rag (corpus), tool (USGS lookup), hybrid (corpus + tool), out_of_scope (corpus has nothing).",
   "queries": [
     {
       "id": "rag-01",

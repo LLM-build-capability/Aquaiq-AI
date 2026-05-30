@@ -1,4 +1,4 @@
-"""Phase 6 benchmark harness.
+"""Benchmark harness for the cloud/local profile comparison.
 
 Runs the queries in scripts/queries.json against the active LLM_PROFILE
 (cloud or local) and writes:
@@ -76,6 +76,48 @@ def _extract_sources(messages):
     return sources
 
 
+class UsageRecorder:
+    """Wrap agent.client.chat.completions.create to accumulate token usage
+    and LLM-side wall time across all calls within one query (including
+    tool-call iterations). Restored after each query.
+    """
+
+    def __init__(self, agent):
+        self.agent = agent
+        self._original = agent.client.chat.completions.create
+        self.calls = 0
+        self.prompt_tokens = 0
+        self.completion_tokens = 0
+        self.total_tokens = 0
+        self.llm_seconds = 0.0
+
+    def __enter__(self):
+        outer = self
+
+        def wrapped(*args, **kwargs):
+            t0 = time.time()
+            resp = outer._original(*args, **kwargs)
+            outer.llm_seconds += time.time() - t0
+            outer.calls += 1
+            usage = getattr(resp, "usage", None)
+            if usage:
+                outer.prompt_tokens += getattr(usage, "prompt_tokens", 0) or 0
+                outer.completion_tokens += getattr(usage, "completion_tokens", 0) or 0
+                outer.total_tokens += getattr(usage, "total_tokens", 0) or 0
+            return resp
+
+        self.agent.client.chat.completions.create = wrapped
+        return self
+
+    def __exit__(self, *exc):
+        self.agent.client.chat.completions.create = self._original
+
+    def tokens_per_second(self):
+        if self.llm_seconds <= 0 or self.completion_tokens <= 0:
+            return None
+        return round(self.completion_tokens / self.llm_seconds, 2)
+
+
 def _tool_calls_emitted(messages):
     """True if any assistant message in the conversation requested a tool call."""
     for m in messages:
@@ -102,6 +144,12 @@ def run_one(agent, q):
         "query_type": None,
         "tool_calls_emitted": False,
         "sources": [],
+        "llm_calls": 0,
+        "prompt_tokens": 0,
+        "completion_tokens": 0,
+        "total_tokens": 0,
+        "llm_seconds": None,
+        "tokens_per_second": None,
         "error": None,
     }
 
@@ -109,18 +157,25 @@ def run_one(agent, q):
     signal.signal(signal.SIGALRM, _timeout_handler)
     signal.alarm(PER_QUERY_TIMEOUT_S)
     t0 = time.time()
-    try:
-        with redirect_stdout(captured):
-            answer = agent.chat(q["query"])
-        record["answer"] = answer
-    except QueryTimeout as e:
-        record["error"] = str(e)
-    except Exception as e:
-        record["error"] = f"{type(e).__name__}: {e}"
-        record["traceback"] = traceback.format_exc()
-    finally:
-        signal.alarm(0)
-        record["latency_s"] = round(time.time() - t0, 3)
+    with UsageRecorder(agent) as usage:
+        try:
+            with redirect_stdout(captured):
+                answer = agent.chat(q["query"])
+            record["answer"] = answer
+        except QueryTimeout as e:
+            record["error"] = str(e)
+        except Exception as e:
+            record["error"] = f"{type(e).__name__}: {e}"
+            record["traceback"] = traceback.format_exc()
+        finally:
+            signal.alarm(0)
+            record["latency_s"] = round(time.time() - t0, 3)
+            record["llm_calls"] = usage.calls
+            record["prompt_tokens"] = usage.prompt_tokens
+            record["completion_tokens"] = usage.completion_tokens
+            record["total_tokens"] = usage.total_tokens
+            record["llm_seconds"] = round(usage.llm_seconds, 3)
+            record["tokens_per_second"] = usage.tokens_per_second()
 
     # Parse the captured stdout for routing info.
     out = captured.getvalue()
@@ -170,7 +225,8 @@ def main():
         status = "ERR" if record["error"] else "OK"
         print(f"           -> {status} latency={record['latency_s']}s "
               f"route={record['query_type']} tool_calls={record['tool_calls_emitted']} "
-              f"sources={len(record['sources'])}")
+              f"sources={len(record['sources'])} "
+              f"comp_tok={record['completion_tokens']} tps={record['tokens_per_second']}")
 
     # Raw JSON dump (human-readable, includes full answers + agent_stdout).
     raw_path = os.path.join(RESULTS_DIR, f"results-{profile}-{timestamp}.json")
@@ -194,22 +250,32 @@ def main():
                 "timestamp", "profile", "model", "collection", "id", "category",
                 "query", "latency_s", "query_type", "rag_similarity",
                 "tool_similarity", "tool_calls_emitted", "num_sources",
-                "sources", "error",
+                "sources", "llm_calls", "prompt_tokens", "completion_tokens",
+                "total_tokens", "llm_seconds", "tokens_per_second", "error",
             ])
         for r in results:
             w.writerow([
                 timestamp, profile, model, collection, r["id"], r["category"],
                 r["query"], r["latency_s"], r["query_type"], r["rag_similarity"],
                 r["tool_similarity"], r["tool_calls_emitted"], len(r["sources"]),
-                ";".join(r["sources"]), r["error"] or "",
+                ";".join(r["sources"]), r["llm_calls"], r["prompt_tokens"],
+                r["completion_tokens"], r["total_tokens"], r["llm_seconds"],
+                r["tokens_per_second"], r["error"] or "",
             ])
     print(f"Summary CSV: {SUMMARY_CSV}")
 
     # Quick aggregates printed to stdout.
     successes = [r for r in results if not r["error"]]
     if successes:
-        avg = sum(r["latency_s"] for r in successes) / len(successes)
-        print(f"\n{len(successes)}/{len(results)} succeeded — avg latency {avg:.2f}s")
+        avg_lat = sum(r["latency_s"] for r in successes) / len(successes)
+        tps_vals = [r["tokens_per_second"] for r in successes if r["tokens_per_second"]]
+        avg_tps = sum(tps_vals) / len(tps_vals) if tps_vals else None
+        total_comp = sum(r["completion_tokens"] for r in successes)
+        msg = f"\n{len(successes)}/{len(results)} succeeded — avg latency {avg_lat:.2f}s"
+        if avg_tps is not None:
+            msg += f", avg tokens/sec {avg_tps:.1f}"
+        print(msg)
+        print(f"Total completion tokens: {total_comp}")
     errors = [r for r in results if r["error"]]
     if errors:
         print(f"{len(errors)} errors:")
