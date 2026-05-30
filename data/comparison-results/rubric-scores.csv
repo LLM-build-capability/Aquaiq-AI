@@ -1,0 +1,41 @@
+profile,id,category,correctness,citation_present,refused_correctly,notes
+cloud,rag-01,rag,2,1,,Correctly cites EPA Lead and Copper Rule action level 0.015 mg/L (15 µg/L) and the 10% exceedance trigger.
+cloud,rag-02,rag,2,1,,Accurate coagulation+flocculation explanation; mechanism dose/pH/jar tests all correct; cites EPA + WHO sources.
+cloud,rag-03,rag,2,1,,WHO provisional 0.01 mg/L (10 µg/L) — correct.
+cloud,rag-04,rag,2,1,,Correct role of sedimentation between flocculation and filtration; sludge handling noted.
+cloud,rag-05,rag,2,1,,Correct on disinfection mechanism and DBPs (THMs / chloramines); honest aside about chlorine dioxide byproducts.
+cloud,rag-06,rag,2,1,,MF/UF/NF/RO size ranges and use-cases correct; pretreatment-for-RO use case named.
+cloud,rag-07,rag,2,1,,Quantitative findings (50% pop / 25 countries / 1.4B drought-affected / agriculture 70%) all consistent with the WWDR.
+cloud,rag-08,rag,2,1,,MCLG vs MCL distinction (health goal vs feasibility-based enforceable limit) correct.
+cloud,tool-01,tool,1,0,,Tool was called; SSL verify error from USGS endpoint; agent reported failure honestly and asked for retry/scope.
+cloud,tool-02,tool,1,0,,Tool called; same SSL error; honest fallback.
+cloud,tool-03,tool,1,0,,Tool called; correctly flagged Benton County TX vs AR ambiguity.
+cloud,tool-04,tool,1,0,,Tool called; SSL error; asked for state disambiguation.
+cloud,tool-05,tool,1,0,,Tool called; flagged Prince George County TX (not recognised) vs MD; SSL error on MD attempt.
+cloud,tool-06,tool,1,0,,Tool called; SSL error; honest.
+cloud,hybrid-01,hybrid,1,1,,Got EPA nitrate MCL (10 mg/L NO3-N) correct; tool side failed (SSL); RAG part complete.
+cloud,hybrid-02,hybrid,1,1,,WHO 10 µg/L correct; tool side blocked by SSL; partial answer.
+cloud,hybrid-03,hybrid,1,1,,Solid pH-importance explanation; tool side returned ambiguity (Benton TX vs AR) so no live readings.
+cloud,hybrid-04,hybrid,1,1,,DO explanation correct; live readings blocked by SSL.
+cloud,oos-01,out_of_scope,2,1,0,Factually correct (Paris ~2.1M) but did NOT refuse despite corpus having no relevance — surfaced un_water_report as false-positive source.
+cloud,oos-02,out_of_scope,2,1,0,Factually correct (Argentina) but did NOT refuse; same false-positive source.
+local,rag-01,rag,0,1,,Wrong — answers WHO 10 µg/L but query asked EPA; EPA action level is 15 µg/L. Embedder retrieved WHO doc and Gemma followed it without noticing the EPA scope.
+local,rag-02,rag,2,1,,Coagulation+flocculation explanation correct and well-structured.
+local,rag-03,rag,2,1,,WHO 10 µg/L provisional — correct.
+local,rag-04,rag,2,1,,Sedimentation role correct; multi-stage placement noted.
+local,rag-05,rag,2,1,,Chlorination + DBPs (THMs/HAAs/haloketones/haloacetonitriles) correct; residual chlorine point well made.
+local,rag-06,rag,2,1,,MF/UF/NF/RO sizes and use-cases correct; longer/more verbose than cloud but accurate.
+local,rag-07,rag,1,1,,Partial — Asia-Pacific section accurate but introduces Falkenmark index thresholds that do not appear in the source PDF; possible hallucination.
+local,rag-08,rag,0,1,,Wrong — claims documents do not contain MCLG/MCL info; cloud answered the same query from the same corpus. Likely retrieval-rank issue under nomic-embed-text.
+local,tool-01,tool,1,1,,Tool was called; SSL error; honest report. Embedder also surfaced 2 corpus docs (false-positive retrieval).
+local,tool-02,tool,0,0,,No tool call emitted — asked the user for state instead. Gemma tool-call drift.
+local,tool-03,tool,0,0,,No tool call emitted.
+local,tool-04,tool,0,0,,No tool call emitted.
+local,tool-05,tool,0,0,,No tool call emitted.
+local,tool-06,tool,0,1,,No tool call emitted; surfaced WHO doc as false-positive source.
+local,hybrid-01,hybrid,0,1,,Empty answer string. Tool was called but no final text emitted.
+local,hybrid-02,hybrid,1,1,,WHO 10 µg/L correct; no tool call so Travis side missing — partial answer.
+local,hybrid-03,hybrid,1,1,,pH explanation correct; tool called and SSL-failed; partial.
+local,hybrid-04,hybrid,1,1,,DO explanation correct; tool called and SSL-failed; partial.
+local,oos-01,out_of_scope,2,0,0,Factually correct but did NOT refuse; no source surfaced this time (lower false-positive than cloud here).
+local,oos-02,out_of_scope,2,1,0,Factually correct (Argentina); did NOT refuse; surfaced un_water_report false-positive.

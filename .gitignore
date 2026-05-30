@@ -25,5 +25,10 @@ models/
 
 # Exercise A — comparison run output (may contain corpus excerpts)
 *.csv
-data/comparison-results/
 data/latency*.json
+data/comparison-results/results-*.json
+data/comparison-results/summary.csv
+data/comparison-results/rubric-template.csv
+# Exception: rubric-scores.csv is corpus-free (IDs + scores + short notes
+# only) and is a required deliverable, so it stays in the repo.
+!data/comparison-results/rubric-scores.csv
