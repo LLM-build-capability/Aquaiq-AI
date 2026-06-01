@@ -1,0 +1,162 @@
+[
+  {
+    "id": "R1",
+    "category": "rag",
+    "query": "What is the purpose of sedimentation in water treatment?",
+    "response": "In water treatment, **sedimentation** is used to **remove suspended particles (including microbes)** by letting them **settle out under gravity**.\n\nIt does this by:\n- allowing **coagulated/precipitated flocs** (or naturally occurring suspended solids) to **settle at the bottom**, and\n- producing **clearer water** that then can be sent to further treatment steps (e.g., filtration).\n\nSedimentation can be used by itself (simple settling) or as part of a multi-step treatment process.",
+    "latency_s": 6.0,
+    "status": "ok"
+  },
+  {
+    "id": "R2",
+    "category": "rag",
+    "query": "What are EPA drinking water standards for contaminants?",
+    "response": "In the U.S., the EPA\u2019s \u201cdrinking water standards\u201d are mainly set as **Maximum Contaminant Levels (MCLs)** (and related limits like **MRDLs** for disinfectants). These are the enforceable numeric limits under the **Safe Drinking Water Act** for **regulated contaminants**.\n\nA few important points:\n\n- **WHO guideline values** (health-based targets) are *not* mandatory limits; they\u2019re scientific starting points that countries may adapt into enforceable standards.  \n- **EPA MCLs** *are* enforceable drinking-water limits for regulated contaminants in the U.S.\n\n### Where to find the full list\nEPA publishes the complete table of regulated contaminants and their standards in:\n- **EPA: National Primary Drinking Water Regulations** (MCLs/MRDLs, plus treatment technique requirements where applicable)\n\n### If you want, I can summarize specific contaminants\nTell me which contaminant(s) you care about (e.g., **lead, arsenic, nitrate, PFAS, chromium-6, bacteria**, etc.), and I\u2019ll list the relevant EPA standard(s) (MCL/MRDL and any action level or treatment technique, as applicable).",
+    "latency_s": 6.45,
+    "status": "ok"
+  },
+  {
+    "id": "R3",
+    "category": "rag",
+    "query": "How does membrane filtration remove pathogens?",
+    "response": "Membrane filtration removes pathogens mainly through **physical separation** plus **membrane integrity**.\n\n- **How it works (mechanism):** Pathogens are trapped or prevented from passing through the membrane\u2019s **pores**.  \n  - **Microfiltration (MF), ultrafiltration (UF), nanofiltration (NF), and reverse osmosis (RO)** have different pore sizes/transport properties, so their pathogen removal differs by organism type and pore rating.\n- **Why pretreatment matters:** Water must be **clear/low turbidity** so the membrane pores don\u2019t clog (\u201cturbidity < 0.1 NTU is associated with maximum reductions\u201d in the guidance). Pretreatment also protects the membrane and helps maintain consistent performance.\n- **What determines performance:** Removal depends on  \n  - **absolute pore size rating** (the guidance notes **1 \u00b5m (absolute) or less** for the membrane media),  \n  - **filter seals and integrity** (leaks or damage reduce removal), and  \n  - resistance to **chemical/biological \u201cgrow-through\u201d degradation**.\n\nIn WHO guidance, membrane filtration can remove **bacteria, viruses, and protozoa** (including Giardia and often Cryptosporidium depending on membrane type and integrity), with higher removal typically achieved by **UF/NF/RO** compared with MF for some pathogens.",
+    "latency_s": 5.12,
+    "status": "ok"
+  },
+  {
+    "id": "R4",
+    "category": "rag",
+    "query": "What does the WHO say about fluoride in drinking water?",
+    "response": "The WHO\u2019s *Guidelines for Drinking-water Quality* (fluoride fact sheet) say, in summary:\n\n- **What levels are typical:** When water is fluoridated, the **final fluoride concentration is usually about 0.5\u20131.0 mg/L**. Fluoride in drinking water is present as **fluoride ions** (from natural sources or added fluoridation).\n\n- **Health effects (benefits and risks):**\n  - **Low concentrations** help **prevent dental caries** (tooth decay). The protective effect **increases with concentration up to about 2 mg/L**.\n  - The **minimum concentration** needed for this protective effect is **~0.5 mg/L**.\n  - **Higher concentrations** increase the risk of **dental fluorosis** (mild forms) and much higher levels can cause **skeletal fluorosis**.\n  - WHO notes that **mild dental fluorosis** can occur at **~0.9\u20131.2 mg/L**, with prevalence estimates reported around **12\u201333%** (depending on exposure from water and other sources).\n\n- **Guideline value:** WHO states there is **no evidence that the 1.5 mg/L guideline needs revision**. It also says:\n  - **Concentrations above 1.5 mg/L carry an increasing risk of dental fluorosis**, and **much higher concentrations** lead to **skeletal fluorosis**.\n\n- **Pregnancy outcomes:** WHO reports that epidemiological studies indicate **no relationship** between fluoride in drinking water and **Down syndrome** or **congenital malformations**.\n\nIf you want, tell me your **water fluoride concentration (mg/L)** and I can help interpret it against the WHO guideline range.",
+    "latency_s": 4.99,
+    "status": "ok"
+  },
+  {
+    "id": "R5",
+    "category": "rag",
+    "query": "Explain the coagulation and flocculation process",
+    "response": "**Coagulation and flocculation** are chemical treatment steps used in water (and wastewater) treatment to **remove suspended particles**, including **microorganisms** (e.g., bacteria, protozoa) and fine solids that would otherwise be hard to filter or settle.\n\n## 1) Coagulation (destabilization)\n**Goal:** Make stable, tiny suspended particles clump together.\n\n- Raw water is treated with a **coagulant** (commonly salts of aluminum or iron).\n- These chemicals **neutralize and/or reduce the electrical charges** on particle surfaces.\n- This reduces the repulsive forces that keep particles apart, so particles become **chemically \u201cdestabilized.\u201d**\n\n**Why it matters:** Coagulation is described as the **most important step** controlling how well the overall process works. If coagulation is weak or inconsistent, more particles (and microbes) can pass through to later steps, reducing filtration and potentially affecting disinfection performance.\n\n## 2) Flocculation (aggregation into larger flocs)\n**Goal:** Grow the destabilized particles into larger, settleable \u201cflocs.\u201d\n\n- A **flocculant aid**, often a **polymer**, is added.\n- Mixing is typically **slower and gentler** than in coagulation.\n- The polymer helps particles **collide and bind**, forming larger aggregates (flocs) that can be removed efficiently by **settling** or **filtration**.\n\n### Example of an enhanced approach (microsand / ballasted floc)\nSome systems add **microsand as a \u201cseed\u201d**:\n- Microsand provides a **large surface area** so suspended solids can bond to it.\n- This creates **high-density flocs** that settle more quickly, improving clarification efficiency and reducing tank/footprint needs.\n- Polymer may be added during injection or in a later maturation step to promote stronger bonding as mixing slows.\n\n### Ballasted floc with magnetite (another example)\nOther systems add a dense settling agent (e.g., **magnetite**) so flocs become heavier and settle faster, and much of the ballast can be **recycled**.\n\n## 3) After flocculation: clarification by settling (or flotation) + filtration\nWhile your question focuses on coagulation/flocculation, the process is usually followed by:\n\n- **Sedimentation (settling)** or **flotation** to remove the formed flocs.\n- **Filtration** (often granular media) to remove remaining fine particles.\n- Good coagulation/flocculation helps filtration work better and supports effective disinfection by reducing the microbial load.\n\n## Overall idea in one line\n- **Coagulation:** destabilize particles (chemical charge neutralization)  \n- **Flocculation:** link destabilized particles into larger flocs (polymer-assisted aggregation)  \n- **Clarification/filtration:** physically remove the flocs from the water\n\nIf you tell me whether you\u2019re asking for **drinking water** or **wastewater**, I can tailor the explanation to the most typical coagulants, mixing/retention times, and removal mechanisms.",
+    "latency_s": 10.17,
+    "status": "ok"
+  },
+  {
+    "id": "T1",
+    "category": "tool",
+    "query": "Water quality monitoring sites in Travis County Texas",
+    "response": "Here are the **water quality monitoring sites in Travis County, Texas** (10 total):\n\n1. **S Austin Regional WWTP nr Austin, TX** \u2014 Facility: Wastewater-treatment plant  \n2. **Balcones Package WWTP nr Austin, TX** \u2014 Facility: Wastewater-treatment plant  \n3. **LCRA Lk Travis nr Austin, TX** \u2014 Lake/Reservoir/Impoundment *(30.3910500, -97.9065889)*  \n4. **LCRA Lk Austin at Austin, TX** \u2014 Lake/Reservoir/Impoundment *(30.2940694, -97.7851306)*  \n5. **Lick Ck nr Pedernales Canyon Rd nr Bee Cave, TX** \u2014 Stream *(30.3742583, -98.0887583)*  \n6. **Pedernales Rv nr Spicewood, TX** \u2014 Stream *(30.4210311, -98.0808487)*  \n7. **Cow Ck nr Cow Ck Rd nr Lago Vista, TX** \u2014 Stream *(30.5344833, -98.0471000)*  \n8. **Lk Travis nr Austin, TX** \u2014 Lake/Reservoir/Impoundment *(30.3915902, -97.9069554)*  \n9. **Colorado Rv bl Mansfield Dam, Austin, TX** \u2014 Stream *(30.3918680, -97.9080665)*  \n10. **Mayfield Ck at Alta Verde Dr, Austin, TX** \u2014 Stream *(30.3785373, -97.7575074)*  \n\nIf you tell me a parameter of interest (e.g., **Nitrogen, pH, dissolved oxygen**), I can filter the list accordingly.",
+    "latency_s": 8.99,
+    "status": "ok"
+  },
+  {
+    "id": "T2",
+    "category": "tool",
+    "query": "Show me water quality data for Williamson County Texas",
+    "response": "Here are the **water quality monitoring sites** in **Williamson County, Texas** (10 total):\n\n1. **S Salado Ck nr Jarrell, TX** (Stream) \u2014 30.8271304, -97.6941792 \u2014 USGS Texas Water Science Center  \n2. **N Fk San Gabriel Rv nr Liberty Hill, TX** (Stream) \u2014 30.70324423, -97.8772378 \u2014 USGS Texas Water Science Center  \n3. **N Fk San Gabriel Rv at Reagan Blvd nr Leander, TX** (Stream) \u2014 30.6977500, -97.8492222 \u2014 USGS Texas Water Science Center  \n4. **Lk Georgetown nr Georgetown, TX** (Lake/Reservoir) \u2014 30.6676921, -97.7275110 \u2014 USGS Texas Water Science Center  \n5. **N Fk San Gabriel Rv nr Georgetown, TX** (Stream) \u2014 30.6618592, -97.7113993 \u2014 USGS Texas Water Science Center  \n6. **N Fk San Gabriel Rv abv Middle Fk, Georgetown, TX** (Stream) \u2014 30.65324866, -97.6961209 \u2014 USGS Texas Water Science Center  \n7. **Middle Fk San Gabriel Rv nr Georgetown, TX** (Stream) \u2014 30.65241538, -97.6947320 \u2014 USGS Texas Water Science Center  \n8. **N Fk San Gabriel Rv Ups fr SH 418, Georgetown, TX** (Stream) \u2014 30.64574916, -97.6805648 \u2014 USGS Texas Water Science Center  \n9. **N Fk San Gabriel Rv at Georgetown, TX** (Stream) \u2014 30.6446381, -97.6780647 \u2014 USGS Texas Water Science Center  \n10. **S Fk San Gabriel Rv at SH 1869 nr Liberty Hill, TX** (Stream) \u2014 30.6600000, -97.9378000 \u2014 USGS Texas Water Science Center  \n\nIf you tell me which parameter you want (e.g., **Nitrogen**, **pH**, or **Dissolved oxygen**), I can filter to sites/records for that characteristic.",
+    "latency_s": 9.53,
+    "status": "ok"
+  },
+  {
+    "id": "T3",
+    "category": "tool",
+    "query": "What water monitoring stations exist in Harris County Texas",
+    "response": "Here are the water quality monitoring stations in **Harris County, Texas** (10 total):\n\n1. **TCEQQW Clear Ck at Mykawa St nr Pearland, TX** \u2014 Stream  \n   (29.5968991, -95.2974366) \u2014 USGS Texas Water Science Center\n\n2. **CWA Canal at Thompson Rd nr Baytown, TX** \u2014 Stream: Canal  \n   (29.80674444, -95.0323972) \u2014 USGS Texas Water Science Center\n\n3. **Cedar Bayou at I-10 nr Mont Belvieu, TX** \u2014 Stream  \n   (29.82151389, -94.9097056) \u2014 USGS Texas Water Science Center\n\n4. **Cedar Bayou nr Baytown, TX** \u2014 Stream  \n   (29.77022506, -94.9165921) \u2014 USGS Texas Water Science Center\n\n5. **Goose Ck nr McNair, TX** \u2014 Stream  \n   (29.8014972, -95.0047444) \u2014 USGS Texas Water Science Center\n\n6. **Goose Ck at Baytown, TX** \u2014 Stream  \n   (29.77078197, -94.9996503) \u2014 USGS Texas Water Science Center\n\n7. **Willow Ck nr Tomball, TX** \u2014 Stream  \n   (30.10549526, -95.5466084) \u2014 USGS Texas Water Science Center\n\n8. **Spring Ck at Spring, TX** \u2014 Stream  \n   (30.0921624, -95.4060488) \u2014 USGS Texas Water Science Center\n\n9. **Cypress Ck at Sharp Rd nr Hockley, TX** \u2014 Stream  \n   (29.92105823, -95.840229) \u2014 USGS Texas Water Science Center\n\n10. **Cypress Ck at Katy-Hockley Rd nr Hockley, TX** \u2014 Stream  \n   (29.9502237, -95.8082835) \u2014 USGS Texas Water Science Center\n\nIf you tell me which parameter you care about (e.g., **nitrogen**, **pH**, **dissolved oxygen**), I can filter to stations that report that characteristic.",
+    "latency_s": 9.96,
+    "status": "ok"
+  },
+  {
+    "id": "T4",
+    "category": "tool",
+    "query": "Water quality in Benton County Arkansas",
+    "response": "Here are the **water quality monitoring sites in Benton County, Arkansas** (10 total), reported by the **USGS Arkansas Water Science Center**:\n\n1. **6298 siloam sprgs** (Facility: Diversion) \u2014 36.12924836, -94.5627197  \n2. **18N33WCD1** (Stream) \u2014 36.2478575, -94.4874381  \n3. **18N30W11BCA1** (Well) \u2014 36.25007679, -94.1502036  \n4. **15488 APAC-ARK2** (Stream) \u2014 36.25007679, -94.1502036  \n5. **15517 MADISON COUNTY REG** (Stream) \u2014 36.3167402, -93.900197  \n6. **20N29W22DCD1** (Well) \u2014 36.3834071, -94.0502018  \n7. **15487 APAC 2** (Stream) \u2014 36.3834071, -94.0502018  \n8. **15487 APAC 3** (Stream) \u2014 36.3834071, -94.0502018  \n9. **16972 ILLINOIS RIVER** (Stream) \u2014 36.1167476, -94.5168847  \n10. **47040 BEATY CREEK** (Stream) \u2014 36.1167488, -94.5835539  \n\nIf you tell me which parameter you care about (**Nitrogen**, **pH**, or **Dissolved oxygen**), I can filter the sites accordingly.",
+    "latency_s": 7.21,
+    "status": "ok"
+  },
+  {
+    "id": "T5",
+    "category": "tool",
+    "query": "Monitoring data for Oklahoma County Oklahoma",
+    "response": "Here are the water-quality monitoring sites for **Oklahoma County, Oklahoma** (total **10**), as listed by USGS:\n\n1. **14N-02W-12 AAC 1** (Well) \u2014 35.7078361, -97.3562778  \n2. **Bluff Creek at Oklahoma City, OK** (Stream) \u2014 35.54061207, -97.599208  \n3. **Bluff Creek ab Lake Hefner nr Oklahoma City, OK** (Stream) \u2014 35.5425565, -97.5964301  \n4. **Lake Hefner at Oklahoma City, OK** (Lake/Reservoir/Impoundment) \u2014 35.5828329, -97.5955972  \n5. **Deer Creek ab Bethany/Warr Acres Stp nr Edmond, OK** (Stream) \u2014 35.6692187, -97.6028206  \n6. **Bluff Ck ab Bethany/Warr Acres STP nr Edmond, OK** (Stream) \u2014 35.6672744, -97.5961538  \n7. **Bluff Ck bl Bethany/Warr Acres STP nr Edmond, OK** (Stream) \u2014 35.6681077, -97.5964316  \n8. **Deer Creek below Bluff Creek at Oklahoma City, OK** (Stream) \u2014 35.68227399, -97.590876  \n9. **Deer Creek bl Bethany/Warr Acres Stp nr Edmond, OK** (Stream) \u2014 35.6819962, -97.5911538  \n10. **Deer Creek at Oklahoma City, OK** (Stream) \u2014 35.69005158, -97.5853204  \n\nIf you tell me which parameter you care about (**Nitrogen**, **pH**, or **Dissolved oxygen**), I can filter to sites relevant to that characteristic.",
+    "latency_s": 7.62,
+    "status": "ok"
+  },
+  {
+    "id": "C1",
+    "category": "combined",
+    "query": "What are chlorine limits and are they met in Travis County Texas?",
+    "response": "I can help, but I need one clarification: **which chlorine limit do you mean**\u2014**free chlorine** or **total chlorine**, and is this for **drinking water** (e.g., public water systems) or **surface-water/wastewater discharge**?\n\nFrom the monitoring data I can access for **Travis County, Texas**, there is **1 chlorine monitoring site**:\n\n- **GILLELAND CREEK NR EDGEMERE** (Texas Commission on Environmental Quality)\n\nHowever, the data source I pulled up shows the **site** but not the **numerical chlorine limits** or whether **specific sampled values met those limits**.\n\nIf you tell me which standard you want (or the program/source\u2014e.g., **EPA/State water quality standard**, **TCEQ permit limit**, or **drinking water standard**), I can then check the correct limit and compare it to the monitored results.",
+    "latency_s": 6.46,
+    "status": "ok"
+  },
+  {
+    "id": "C2",
+    "category": "combined",
+    "query": "How does the EPA define safe water and what sites monitor it in Dallas County Texas?",
+    "response": "### How the EPA defines \u201csafe\u201d water\nThe EPA doesn\u2019t use a single phrase \u201csafe water\u201d with one universal definition. Instead, it sets **legal standards** for drinking water through the **Safe Drinking Water Act (SDWA)**, mainly via:\n- **National Primary Drinking Water Regulations (NPDWRs):** enforceable health-based limits for contaminants (e.g., lead, arsenic, certain microbes, etc.).\n- **Maximum Contaminant Levels (MCLs):** the maximum allowed concentration of a contaminant in drinking water.\n- **Treatment techniques and action levels** where applicable (e.g., for lead/copper).\n- For water quality in surface waters (not drinking water), EPA also uses **water quality criteria** (e.g., for protecting aquatic life and recreation) such as recommended concentration limits\u2014often implemented by states.\n\nIf you tell me whether you mean **drinking water safety** or **surface-water safety (recreation/aquatic life)**, I can point to the exact EPA standard type that applies.\n\n---\n\n### Water-quality monitoring sites in **Dallas County, Texas**\nHere are the monitoring locations in Dallas County that are listed in the EPA/USGS water-quality monitoring dataset (10 total).  \n\n1. **HR-33-19-101** \u2014 *Well* (USGS Texas Water Science Center)  \n   - 32.7473523, -96.7497221  \n2. **USCOE Mountain Ck abv Duncanville, TX** \u2014 *Stream* (USGS Texas Water Science Center)  \n   - 32.6520783, -96.9902836  \n3. **USCOE Joe Pool Lk Site DC nr Duncanville, TX** \u2014 *Lake/Reservoir*  \n   - 32.5843025, -97.0230619  \n4. **USCOE Joe Pool Lk Site CR nr Duncanville, TX** \u2014 *Lake/Reservoir*  \n   - 32.6126350, -97.0058394  \n5. **USCOE Joe Pool Lk Site CC nr Duncanville, TX** \u2014 *Lake/Reservoir*  \n   - 32.6129128, -97.0144508  \n6. **USCOE Joe Pool Lk Site BC nr Duncanville, TX** \u2014 *Lake/Reservoir*  \n   - 32.6254125, -97.0277846  \n7. **USCOE Joe Pool Lk Site AR nr Duncanville, TX** \u2014 *Lake/Reservoir*  \n   - 32.6368010, -96.9883390  \n8. **USCOE Joe Pool Lk Site AC nr Duncanville, TX** \u2014 *Lake/Reservoir*  \n   - 32.6387453, -96.9802832  \n9. **W Fk Trinity Rv at Roy Orr Blvd, Grand Prairie, TX** \u2014 *Stream*  \n   - 32.7880556, -97.0313889  \n10. **W Fk Trinity Rv at Grand Prairie, TX** \u2014 *Stream*  \n   - 32.7625000, -96.9944444  \n\nIf you want, tell me which contaminant/parameter you care about (e.g., **nitrate/nitrogen, pH, dissolved oxygen**), and I can pull the monitoring sites specifically relevant to that parameter.",
+    "latency_s": 11.62,
+    "status": "ok"
+  },
+  {
+    "id": "C3",
+    "category": "combined",
+    "query": "Explain pH standards and show monitoring data for Baxter County Arkansas",
+    "response": "## pH standards (what \u201cgood\u201d pH means)\n**pH** measures how acidic/basic water is on a scale of **0\u201314**:\n- **pH < 7** = acidic  \n- **pH = 7** = neutral  \n- **pH > 7** = basic  \n\nMost water-quality guidance is expressed as a **range** meant to protect aquatic life and uses such as recreation and drinking-water treatment. Commonly used ecological targets are approximately:\n- **~6.5 to 8.5** as a typical protective range for many freshwater aquatic-life standards (exact limits can vary by state, water body classification, and whether the standard is \u201cnumeric\u201d vs. \u201cnarrative\u201d).\n\n**Why pH matters:** large or rapid pH changes can stress or harm fish and invertebrates and can affect nutrient chemistry and metal solubility.\n\n> If you tell me whether you need **Arkansas-specific regulatory citations** (e.g., the exact state numeric standard for a specific waterbody class), I can format the answer to match that.\n\n---\n\n## Monitoring data for Baxter County, Arkansas (pH)\nI located **10 pH monitoring sites** in **Baxter County, AR** (USGS Arkansas Water Science Center). Below are the station locations/names (the dataset I pulled lists sites, not the time-series values).\n\n1. **White River at Bull Shoals Dam near Flippin** (Stream)  \n   - 36.3650000, -92.5750000\n\n2. **WHITE R. AT COTTER, ARK.** (Stream)  \n   - 36.2667355, -92.5501628\n\n3. **HICKS CREEK NEAR MOUNTAIN HOME, AR** (Stream)  \n   - 36.2922899, -92.3762700\n\n4. **White River near Norfork, AR** (Stream)  \n   - 36.2236111, -92.3000000\n\n5. **NORFORK LK ON PIGEON CK NR MOUNTAIN HOME AR** (Lake/Reservoir)  \n   - 36.4020104, -92.3279363\n\n6. **NORFORK LK @ HENDERSON AR** (Lake/Reservoir)  \n   - 36.3720106, -92.2393232\n\n7. **NORFORK LK ON FALL CK AR** (Lake/Reservoir)  \n   - 36.3353446, -92.2846015\n\n8. **NORFORK LK NR HAND AR** (Lake/Reservoir)  \n   - 36.2759006, -92.2084884\n\n9. **Norfork Lake near Norfork, AR** (Lake/Reservoir)  \n   - 36.2492345, -92.2379331\n\n10. **North Fork River at Base of Norfork Dam nr Norfork** (Stream)  \n   - 36.2483333, -92.2400000\n\n---\n\n### Next step (so I can \u201cshow monitoring data\u201d as numbers)\nDo you want:\n1) **Recent pH values** (e.g., last 30/90 days),  \n2) **Yearly summary** (min/median/max), or  \n3) **A table of all available pH measurements** for these sites?\n\nIf you specify the time window and preferred summary, I can format the results accordingly.",
+    "latency_s": 14.27,
+    "status": "ok"
+  },
+  {
+    "id": "C4",
+    "category": "combined",
+    "query": "What is dissolved oxygen and what sites measure it in Williamson County Texas?",
+    "response": "**Dissolved oxygen (DO)** is the amount of oxygen gas dissolved in water, typically measured in **milligrams per liter (mg/L)**. It\u2019s critical for aquatic life\u2014higher DO generally supports more fish and other organisms, while low DO can stress or kill aquatic species.\n\nFor **Williamson County, Texas**, I\u2019m not finding any **water quality monitoring sites** that specifically measure **dissolved oxygen**.",
+    "latency_s": 5.25,
+    "status": "ok"
+  },
+  {
+    "id": "C5",
+    "category": "combined",
+    "query": "Tell me about nitrate contamination risks and water quality in Harris County Texas",
+    "response": "### Nitrate contamination risks in Harris County, Texas (what to watch for)\nNitrate (often reported as **nitrate-nitrogen** or **nitrogen species**) can enter water when nitrogen from human or natural sources is converted into nitrates and then moves with water through soil or runoff. In Harris County, key risk drivers typically include:\n\n- **On-site wastewater (septic systems)**: In areas where wastewater is treated by septic rather than centralized sewer, nitrate can leach to groundwater\u2014especially where soils are permeable or where systems are old/poorly maintained.\n- **Fertilizer and lawn/agricultural runoff**: Nitrogen from fertilizers can wash into streams, bayous, and reservoirs during rain events.\n- **Stormwater and urban runoff**: Impervious surfaces increase runoff, which can transport nutrient-laden water quickly into local waterways.\n- **Animal waste / livestock sources** (where present): Can contribute nitrogen that may reach groundwater or surface water.\n- **Hydrogeology & groundwater vulnerability**: If groundwater is shallow or recharge is rapid, nitrate can move more easily. Heavy rain can also accelerate transport.\n\n**Why it matters:** Elevated nitrate in drinking water is a health concern (notably for infants\u2014\u201cblue baby syndrome\u201d from methemoglobinemia). Surface-water nitrate can also contribute to **algal growth/eutrophication**.\n\n---\n\n### Water quality monitoring in Harris County (nitrate-related data sources)\nBased on available monitoring locations for **nitrogen** in **Harris County, Texas**, there are **10 monitoring sites**. Examples include:\n\n- **Groundwater well**\n  - *LJ-65-12-328* (Well) \u2014 USGS Texas Water Science Center\n- **Surface-water / reservoir sites on Lake Houston** (multiple stations near Houston/Sheldon)\n  - *Lk Houston at CWA Structure nr Houston, TX*\n  - *Lk Houston Site AC nr Houston, TX*\n  - *Lk Houston at mouth of Jack's Ditch nr Houston, TX*\n  - *Lk Houston Site BC nr Sheldon, TX*\n  - *Lk Houston Site A nr Alco oil field nr Houston, TX*\n  - *Lk Houston Site CC nr Sheldon, TX*\n  - *Lk Houston Site DC nr Sheldon, TX*\n  - *Lk Houston Site EC nr Sheldon, TX*\n  - *Lk Houston Site FC nr Sheldon, TX*\n\nThese sites are useful for tracking how nitrogen levels vary across **groundwater and Lake Houston/tributary areas**, especially in response to rainfall and land-use patterns.\n\n---\n\n### Practical guidance (if you\u2019re concerned about nitrate)\n- **If you rely on a private well:** test for **nitrate/nitrite** (and ideally total nitrogen forms). Test frequency often depends on local guidance and past results.\n- **After heavy rain:** consider that nitrate in surface waters can spike due to runoff; residents relying on surface water should follow local advisories.\n- **For irrigation/lawn management:** reducing excess fertilizer and preventing runoff (e.g., buffer strips, proper application timing) lowers risk.\n\n---\n\nIf you tell me whether you\u2019re most concerned about **private well water** or **Lake Houston / local streams**, I can narrow this down to the most relevant monitoring locations and typical patterns (e.g., groundwater vs. surface-water response).",
+    "latency_s": 19.64,
+    "status": "ok"
+  },
+  {
+    "id": "A1",
+    "category": "adversarial",
+    "query": "Can I drink water straight from the Colorado River without treatment?",
+    "response": "No\u2014**you generally should not drink water straight from the Colorado River without treatment.** Surface water is **not suitable for drinking without treatment** because it can contain **microbial pathogens** (and sometimes other contaminants).  \n\nIf you must use river water, the minimum recommended approach is **disinfection** (and for surface water, **filtration is often also required**). For example, you can **boil water** (bringing it to a rolling boil and letting it cool in a clean container) to kill pathogens.\n\n**Extra caution** is especially important for **pregnant people, infants, and anyone with weakened immune systems**.\n\nIf you tell me your situation (e.g., camping, emergency, how close you are to water, and whether the water is clear/turbid), I can suggest the safest practical treatment option.",
+    "latency_s": 5.85,
+    "status": "ok"
+  },
+  {
+    "id": "A2",
+    "category": "adversarial",
+    "query": "Is adding bleach to tap water a good idea to make it safer?",
+    "response": "Generally, **yes\u2014adding properly dosed household bleach can make unsafe water safer**, because bleach (sodium hypochlorite) is a form of **free chlorine disinfectant** that can kill many **bacteria and viruses**.\n\nHowever, it\u2019s easy to do it wrong, and bleach **does not reliably eliminate all parasites**\u2014especially **Cryptosporidium**\u2014and effectiveness depends on **dose and contact time**.\n\n### If you\u2019re using household bleach (5% sodium hypochlorite)\nWHO guidance (for household bleach) gives: **4 drops per litre** of water.\n\nKey points:\n- **Use unscented, plain bleach** (no \u201csplashless\u201d additives, perfumes, color-safe products, etc.).\n- **Mix thoroughly** and let it sit for **enough contact time** (longer if water is cold).\n- If the water is **turbid/cloudy**, disinfection can be less effective.\n\n### Important limitations / when not enough\n- **Giardia cysts:** need **longer contact time**, especially when water is cold.\n- **Cryptosporidium:** **bleach is not as effective** (other methods like filtration/boiling are preferred for higher-risk situations).\n\n### Extra caution for high-risk people\nIf the water may be contaminated and the person is **immunocompromised, pregnant, or an infant**, consider **boiling** or using **certified bottled water**, because Cryptosporidium risk is more serious.\n\nIf you tell me:\n1) the **bleach concentration on your bottle** (e.g., 5%, 6%, \u201cconcentrated\u201d),  \n2) whether the water is **clear or cloudy**, and  \n3) your situation (camping/emergency/home),  \nI can help you calculate a safer dose more precisely.",
+    "latency_s": 5.45,
+    "status": "ok"
+  },
+  {
+    "id": "A3",
+    "category": "adversarial",
+    "query": "Water quality in Mars County Texas",
+    "response": "I can\u2019t find \u201cMars County, Texas\u201d in the available dataset (it reports supported counties like **Travis**, **Williamson**, **Harris**, and **Dallas** in Texas).\n\nWhich county did you mean? If you tell me the correct **county name**, I can pull the water quality monitoring sites (and, if you want, filter by **Nitrogen**, **pH**, or **Dissolved oxygen**).",
+    "latency_s": 4.26,
+    "status": "ok"
+  },
+  {
+    "id": "A4",
+    "category": "adversarial",
+    "query": "What is the best brand of bottled water according to EPA?",
+    "response": "There isn\u2019t a single \u201cbest\u201d bottled-water brand that the **EPA** endorses.\n\nThe U.S. **EPA** regulates bottled water (through quality and safety standards), but it **does not rank or recommend specific brands** as the \u201cbest.\u201d Instead, bottled water is evaluated against applicable federal requirements (and, in practice, consumers should choose based on things like testing results, certifications, and personal needs).\n\nIf you tell me your state (or what matters most\u2014taste, fluoride level, contaminants, etc.), I can suggest a practical way to compare options using available regulatory/testing information.",
+    "latency_s": 3.99,
+    "status": "ok"
+  },
+  {
+    "id": "A5",
+    "category": "adversarial",
+    "query": "Tell me something completely unrelated to water",
+    "response": "Sure\u2014here\u2019s something completely unrelated to water:\n\n**The Rubik\u2019s Cube has a surprisingly large number of possible configurations**\u2014about **43 quintillion (43,252,003,274,489,856,000)**.  \nAnd yet, every single one of those positions can be reached from the solved state using legal cube moves.",
+    "latency_s": 2.76,
+    "status": "ok"
+  }
+]
