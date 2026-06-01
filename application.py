@@ -27,12 +27,13 @@ st.markdown("""
 """, unsafe_allow_html=True)
 st.title("Water Treatment Assistant")
 st.caption("Ask about water treatment or water quality")
-# checking env vars
-required_vars = ["AZURE_OPENAI_API_KEY", "AZURE_OPENAI_ENDPOINT", "AZURE_OPENAI_DEPLOYMENT"]
-missing = [v for v in required_vars if not os.getenv(v)]
-if missing:
-   st.error(f"Missing: {missing}")
-   st.stop()
+# checking env vars (only required for cloud profile)
+if os.getenv("LLM_PROFILE", "cloud").lower() != "local":
+   required_vars = ["AZURE_OPENAI_API_KEY", "AZURE_OPENAI_ENDPOINT", "AZURE_OPENAI_DEPLOYMENT"]
+   missing = [v for v in required_vars if not os.getenv(v)]
+   if missing:
+      st.error(f"Missing: {missing}")
+      st.stop()
 # init session
 if "agent" not in st.session_state:
    with st.spinner("Loading..."):

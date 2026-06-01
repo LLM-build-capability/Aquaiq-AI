@@ -25,6 +25,7 @@
 - [Agent Decision Logic](#agent-decision-logic)
 - [Workflow Diagrams](#workflow-diagrams)
 - [Installation Guide](#installation-guide)
+- [Local Mode Setup (Ollama)](#local-mode-setup-ollama)
 - [Environment Variables](#environment-variables)
 - [How to Run the Project](#how-to-run-the-project)
 - [How to test the Project](#how-to-test-the-project)
@@ -253,6 +254,67 @@ This workflow shows how the system processes a user query and dynamically decide
 ```
  
  
+## Local Mode Setup (Ollama)
+
+The agent supports a fully **offline local mode** using [Ollama](https://ollama.com) — no Azure credentials needed. All inference runs on-device.
+
+### Prerequisites
+
+- **Ollama** installed: `brew install ollama` (macOS) or see https://ollama.com/download
+- At least **10 GB free disk space** for the two models
+- Tested on: Apple Silicon MacBook (16 GB RAM), Ollama v0.24.0
+
+### 1. Pull the required models
+
+```bash
+ollama pull gemma3n:e4b        # ~7.5 GB — chat model
+ollama pull nomic-embed-text   # ~274 MB — embedding model
+```
+
+### 2. Start Ollama
+
+```bash
+brew services start ollama
+# verify: curl http://localhost:11434/api/version
+```
+
+### 3. Configure .env
+
+```bash
+LLM_PROFILE=local
+OLLAMA_BASE_URL=http://localhost:11434/v1
+OLLAMA_CHAT_MODEL=gemma3n:e4b
+OLLAMA_EMBED_MODEL=nomic-embed-text
+CHROMA_COLLECTION_LOCAL=water_rag_local
+```
+
+### 4. Ingest documents
+
+```bash
+poetry run python -m src.aquaiq_ai.ingest
+# Builds the water_rag_local ChromaDB collection (~6,366 chunks from 4 PDFs)
+```
+
+### 5. Run the app
+
+```bash
+poetry run streamlit run application.py
+```
+
+No internet connection is required after the initial model pull.
+
+### Known limitations (local mode)
+
+| Limitation | Detail |
+|------------|--------|
+| No native tool-calling | Gemma 3n E4B does not support the OpenAI function-calling protocol. County extraction uses regex; edge-case county phrasing may not match. |
+| Latency | p50 ~12–25s vs ~2–5s for cloud. Acceptable for document lookup; not for real-time use. |
+| Embedding dimensions | 768 dims (nomic-embed-text) vs 1536 (Azure). Local and cloud collections cannot share the same ChromaDB collection. |
+
+See `docs/local-mode-comparison.md` for the full 20-query benchmark and `docs/when-to-go-local.md` for deployment guidance.
+
+---
+
 ## Installation Guide
  
 ### Prerequisites

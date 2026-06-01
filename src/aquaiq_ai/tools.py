@@ -73,7 +73,7 @@ def execute_water_quality_tool(county_name: str, characteristic: str = "") -> Di
         params["characteristicName"] = characteristic
     try:
         print(f"  Fetching water quality data for {county_name}...")
-        response = requests.get(url, params=params, timeout=30)
+        response = requests.get(url, params=params, timeout=30, verify=False)
         if response.status_code == 204:
             return {
                 "location": county_name,

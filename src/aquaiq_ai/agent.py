@@ -1,6 +1,7 @@
 import os
 import sys
 import json
+import re
 import numpy as np
 
 sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__)))))
@@ -10,7 +11,7 @@ from dotenv import load_dotenv
 
 from src.aquaiq_ai.retriever import WaterDocRetriever
 from src.aquaiq_ai.embedding_helper import get_embedder
-from src.aquaiq_ai.tools import WATER_QUALITY_TOOL, execute_water_quality_tool
+from src.aquaiq_ai.tools import WATER_QUALITY_TOOL, execute_water_quality_tool, COUNTY_CODES
 
 load_dotenv()
 
@@ -114,6 +115,19 @@ class WaterAgent:
         else:
             return "tool"
 
+    def _extract_county(self, query):
+        # Gemma3n doesn't support tool-calling, so we extract the county
+        # from the query text directly and call the tool ourselves.
+        q = query.lower()
+        for key in COUNTY_CODES:
+            if key in q:
+                return key
+        # fallback: match any word-pair that looks like "<name> county"
+        match = re.search(r'(\w[\w\s]+county[\w\s]*)', q)
+        if match:
+            return match.group(1).strip()
+        return None
+
     def reset(self):
         # clear conversation history
         self.messages = []
@@ -140,7 +154,22 @@ class WaterAgent:
         # Whether to allow tool calling
         use_tool = q_type in ["tool", "both"]
 
-        # Loop for tool calls
+        # Local models (Gemma3n) don't support tool-calling protocol.
+        # Extract the county, call the tool directly, and inject the result
+        # as a system message so the model can still synthesize an answer.
+        if use_tool and self.profile == "local":
+            county = self._extract_county(user_input)
+            if county:
+                tool_result = execute_water_quality_tool(county_name=county)
+            else:
+                tool_result = {"error": "Could not identify a county in your query. Supported: " + ", ".join(COUNTY_CODES.keys())}
+            self.messages.append({
+                "role": "system",
+                "content": f"Water quality data from USGS:\n{json.dumps(tool_result, indent=2)}\n\nUse this data to answer the user."
+            })
+            use_tool = False  # skip the tool-call loop below
+
+        # Loop for tool calls (cloud only after above short-circuit)
         for _ in range(self.max_tool_calls):
             params = {
                 "model": self.chat_model,
