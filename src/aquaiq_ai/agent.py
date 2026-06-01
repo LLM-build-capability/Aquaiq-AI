@@ -30,7 +30,7 @@ def _build_llm_client():
             base_url=os.getenv("OLLAMA_BASE_URL", "http://localhost:11434/v1"),
             api_key="ollama",
         )
-        model = os.getenv("OLLAMA_CHAT_MODEL", "gemma3:e4b")
+        model = os.getenv("OLLAMA_CHAT_MODEL", "gemma3n:e4b")
         return client, model
     client = AzureOpenAI(
         api_key=os.getenv("AZURE_OPENAI_API_KEY"),
