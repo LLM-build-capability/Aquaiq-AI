@@ -4,7 +4,7 @@ import chromadb
 from chromadb.config import Settings
 from dotenv import load_dotenv
 
-from src.aquaiq_ai.embedding_helper import AzureEmbedder
+from src.aquaiq_ai.embedding_helper import get_embedder
 
 # getting same path problem like ingest file. so added 3 dirname again.
 sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__)))))
@@ -19,22 +19,31 @@ DB_PATH = os.path.join(BASE_DIR, os.getenv("CHROMA_PERSIST_DIR", "chroma_db"))
 TOP_K = int(os.getenv("RAG_TOP_K", "5"))  # I increased from 3 to 5 for better results
 
 
+def _collection_name():
+    # Cloud (1536 dims) and local (768 dims) cannot share a collection.
+    profile = os.getenv("LLM_PROFILE", "cloud").lower()
+    if profile == "local":
+        return os.getenv("CHROMA_COLLECTION_LOCAL", "water_rag_local")
+    return os.getenv("CHROMA_COLLECTION_CLOUD", "water_rag")
+
+
 class WaterDocRetriever:
     def __init__(self):
-        self.embedder = AzureEmbedder()
+        self.embedder = get_embedder()
         self.client = chromadb.Client(Settings(
             persist_directory=DB_PATH,
             is_persistent=True
         ))
+        self.collection_name = _collection_name()
         try:
-            self.collection = self.client.get_collection("water_rag")
+            self.collection = self.client.get_collection(self.collection_name)
             num_chunks = self.collection.count()
             self.available = num_chunks > 0
-            print(f"Retriever ready. Found {num_chunks} chunks in database.")
+            print(f"Retriever ready ({self.collection_name}). Found {num_chunks} chunks in database.")
         except Exception as e:
             self.available = False
-            print(f"Retriever error: {e}")
-            print("Run ingest.py first to build the database.")
+            print(f"Retriever error on collection '{self.collection_name}': {e}")
+            print("Run ingest.py with the matching LLM_PROFILE to build it.")
 
     def _expand_query(self, query):
         # Added some related terms
