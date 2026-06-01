@@ -303,6 +303,17 @@ poetry run streamlit run application.py
 
 No internet connection is required after the initial model pull.
 
+### Hardware used
+
+| | |
+|---|---|
+| Machine | MacBook Pro — Apple M4 Pro, 14-core |
+| RAM | 24 GB unified memory |
+| OS | macOS 26.2 |
+| Token throughput | ~46 tok/s (Metal backend) |
+
+Minimum recommended: 16 GB RAM. On 8 GB, use `gemma3:1b` and document the constraint.
+
 ### Known limitations (local mode)
 
 | Limitation | Detail |
