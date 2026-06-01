@@ -9,6 +9,35 @@
 
 ---
 
+## Model Selection — The Size / RAM / Quantization Triangle
+
+### What the three axes mean
+
+**Model size** (parameter count) sets the capability ceiling — reasoning depth, instruction following, knowledge breadth. More parameters = higher ceiling, but more memory and compute per token.
+
+**RAM** is the hard constraint on a laptop. The entire model must fit in memory or the OS will swap to disk, destroying latency. A model that fits in RAM runs at memory-bandwidth speed; a model that swaps runs at SSD speed — roughly 10–20× slower.
+
+**Quantization** is the compression knob. FP32 weights take 4 bytes each; FP16 takes 2 bytes; Q4 (four-bit integer) takes ~0.5 bytes. Quantization trades a small quality penalty (slightly higher perplexity) for a large reduction in memory footprint. `E4B` means "efficiently quantized, 4-bit, B variant" — approximately Q4_K_M in llama.cpp terms.
+
+### Why E4B was the right pick for a 16 GB laptop
+
+| Model | Params | Q4 size | Fits in 16 GB? | Notes |
+|---|---|---|---|---|
+| `gemma3:1b` | 1B | ~0.8 GB | ✅ easily | Fast, but weak reasoning and worse tool-following |
+| **`gemma3:e4b`** | **4B** | **~3.5 GB** | **✅ comfortably** | **Sweet spot — leaves ~12 GB for OS, ChromaDB, KV cache** |
+| `gemma3:8b` | 8B | ~5.5 GB | ✅ fits, tight | Better reasoning, ~2× slower; KV cache can push memory pressure on long RAG contexts |
+| `gemma3:27b` | 27B | ~18 GB | ❌ won't fit | Needs 32 GB+ |
+
+`gemma3:e4b` at ~3.5 GB leaves comfortable headroom for the OS, ChromaDB, the Python process, and the KV cache for long RAG contexts (5 retrieved chunks + conversation history can reach 2–4 GB on their own). It runs entirely in-memory on Apple Silicon unified memory — no swap, no IO stalls.
+
+**What `gemma3:1b` would change:** Sub-5s latency, but noticeably weaker instruction-following, shallower reasoning, and a worse tool-call reliability gap than E4B. The quality drop from 1B→4B is larger than from 4B→8B on most tasks.
+
+**What `gemma3:8b` would change:** Better RAG correctness and likely improved tool-call reliability (more instruction-following capacity). But ~2× slower at median latency, and on a 16 GB machine a long multi-turn session with 5 retrieved chunks can push the KV cache into memory pressure. Tool-call drift would improve but not disappear — that is a post-training gap, not purely a capacity gap (see Diagnosis section below).
+
+**The Q4 quantization penalty** is roughly equivalent to losing ~0.5B parameters of effective capacity. For this use case the tradeoff is correct: the alternative is running a 2× smaller FP16 model at the same memory cost, which loses far more capability than the quantization costs.
+
+---
+
 ## Rubric
 
 All 40 answers were scored by a single rater after both profiles had run.
@@ -144,6 +173,8 @@ Cloud hit 10/10 tool calls. Local hit 4/10. On `tool-02` through `tool-06`, Gemm
 
 This is not a bug to fix in the agent loop. The tool schema, system prompt, and routing threshold are identical on both profiles. The behaviour gap is in the model's instruction-following under ambiguity.
 
+**Cloud-era pattern violated:** The agent loop treats `tool_calls` as a deterministic signal — `if msg.tool_calls: execute_tool()` is the entire dispatch branch. There is no fallback for "model was supposed to call the tool but produced a clarification instead." Cloud-era RAG agents were designed against models where that branch is always taken when the schema matches; that assumption does not hold for smaller open-weight models.
+
 ### 2. Embedder-driven scope leakage (root cause: different similarity geometry)
 
 `rag-01` asked for the EPA lead limit. Cloud retrieved EPA documents and answered correctly (15 µg/L action level). Local retrieved `who_water_guidelines.pdf` and answered with WHO's 10 µg/L provisional guideline — a factually defensible number for the wrong regulatory body.
@@ -151,6 +182,8 @@ This is not a bug to fix in the agent loop. The tool schema, system prompt, and 
 **Why:** `text-embedding-3-small` and `nomic-embed-text` cluster the query "EPA limits for lead" against the corpus differently. Cloud ranked the EPA document higher; local ranked the WHO document higher. Both retrievals are semantically reasonable — "lead in drinking water limits" is a valid match for both docs. The embedder's training data and calibration determine which document wins at rank-1. This is not a ChromaDB bug or a `top-k` problem: it is the expected consequence of using a different embedding model on the same corpus.
 
 The same effect explains `rag-08`: the `epa_water_treatment.pdf` chunk containing the MCLG/MCL distinction was ranked below `top-k=5` by `nomic-embed-text`, so local declared the corpus didn't contain the answer. Cloud retrieved it easily.
+
+**Cloud-era pattern violated:** Cloud RAG agents embed query and corpus with the same model (or same family), so the similarity geometry is consistent — the `top-k` threshold is calibrated against one embedder's distance distribution. Swapping the embedder at ingest or query time shifts the geometry; a `top-k=5` that reliably surfaces the right chunk under `text-embedding-3-small` may not under `nomic-embed-text`. The two embedders are not drop-in replacements at the retrieval layer.
 
 ### 3. Verbosity penalty (root cause: Gemma output style)
 
@@ -160,6 +193,8 @@ Local completion tokens averaged 3.3× cloud. Gemma adds preamble ("Great questi
 
 Mitigation: add `max_tokens=400` or a "be concise" system directive. Not implemented here — the exercise is honest comparison, not local advocacy.
 
+**Cloud-era pattern violated:** Cloud agents typically omit `max_tokens` because GPT-class models are calibrated to match response length to query complexity — a one-sentence question gets a one-paragraph answer. `gemma4:e4b` was instruction-tuned on chat data that rewards thoroughness; without an explicit length constraint, it defaults to a teaching-assistant register regardless of query complexity. The absence of a token cap is a hidden cloud assumption.
+
 ### 4. Empty final-message glitch (`hybrid-01`, root cause: post-tool generation failure)
 
 On `hybrid-01`, local emitted a valid tool call, the tool returned (with an SSL error), and the agent appended the tool result to the message list — but Gemma did not produce a final assistant message. The recorded answer is an empty string. 781 completion tokens were billed (for the tool call and intermediate reasoning) but nothing reached the user.
@@ -168,8 +203,12 @@ On `hybrid-01`, local emitted a valid tool call, the tool returned (with an SSL 
 
 This failure mode is silent: no exception, no warning, `tool_calls_emitted=True`, but answer is blank. Any orchestrator relying on this agent must treat an empty answer as a distinct failure state, not as a successful empty response.
 
+**Cloud-era pattern violated:** Cloud-era agents treat a non-empty `msg.content` after a tool call as guaranteed — GPT-class models are trained on extensive tool-error recovery data and always produce a graceful degradation message. The empty-content branch in the agent loop is effectively dead code against cloud models. Under Gemma it fires silently on edge-case tool results.
+
 ### 5. Context-window drops during local ingest (root cause: nomic-embed-text 8K limit)
 
 `nomic-embed-text` has an 8,192-token context limit. Approximately 6 of the 6,462 corpus chunks exceeded this. Those chunks were skipped during `water_rag_local` ingest after the per-item fallback in `OllamaEmbedder.embed_batch` exhausted retries.
 
 **Why:** The chunker was tuned against `text-embedding-3-small`, which has a 8,191-token limit but sits in a longer-context model family. The UN water report and EPA treatment manual contain lengthy appendix tables that produce oversized chunks. Cloud handled them; local dropped them. The dropped chunks are edge-case reference material, so the quality impact is small but not zero — a query hitting exactly one of those chunks would fail silently.
+
+**Cloud-era pattern violated:** Cloud RAG pipelines are designed with the assumption that the embedder accepts every chunk the chunker produces — a chunk that fails to embed is an unhandled exception, not a routine occurrence. Under `nomic-embed-text` the 8K context limit is a real operational boundary; the per-item fallback in `OllamaEmbedder.embed_batch` was added specifically to handle this, but it means some corpus content is permanently absent from the local collection with no visible warning at query time.
