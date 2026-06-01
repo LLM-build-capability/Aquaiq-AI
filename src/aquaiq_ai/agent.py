@@ -5,30 +5,51 @@ import numpy as np
 
 sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__)))))
 
-from openai import AzureOpenAI
+from openai import AzureOpenAI, OpenAI
 from dotenv import load_dotenv
 
 from src.aquaiq_ai.retriever import WaterDocRetriever
-from src.aquaiq_ai.embedding_helper import AzureEmbedder
+from src.aquaiq_ai.embedding_helper import get_embedder
 from src.aquaiq_ai.tools import WATER_QUALITY_TOOL, execute_water_quality_tool
 
 load_dotenv()
 
 
+def _build_llm_client():
+    """Pick the chat client based on LLM_PROFILE.
+
+    cloud -> AzureOpenAI + AZURE_OPENAI_DEPLOYMENT
+    local -> OpenAI(base_url=ollama) + OLLAMA_CHAT_MODEL (gemma3:e4b)
+
+    Returns (client, model_name). Both profiles share the same call
+    shape because Ollama exposes an OpenAI-compatible endpoint.
+    """
+    profile = os.getenv("LLM_PROFILE", "cloud").lower()
+    if profile == "local":
+        client = OpenAI(
+            base_url=os.getenv("OLLAMA_BASE_URL", "http://localhost:11434/v1"),
+            api_key="ollama",
+        )
+        model = os.getenv("OLLAMA_CHAT_MODEL", "gemma3:e4b")
+        return client, model
+    client = AzureOpenAI(
+        api_key=os.getenv("AZURE_OPENAI_API_KEY"),
+        api_version=os.getenv("API_VERSION"),
+        azure_endpoint=os.getenv("AZURE_OPENAI_ENDPOINT"),
+    )
+    return client, os.getenv("AZURE_OPENAI_DEPLOYMENT")
+
+
 class WaterAgent:
     def __init__(self):
-        # Set up Azure client
-        self.client = AzureOpenAI(
-            api_key=os.getenv("AZURE_OPENAI_API_KEY"),
-            api_version=os.getenv("API_VERSION"),
-            azure_endpoint=os.getenv("AZURE_OPENAI_ENDPOINT")
-        )
-        self.chat_model = os.getenv("AZURE_OPENAI_DEPLOYMENT")
+        self.profile = os.getenv("LLM_PROFILE", "cloud").lower()
+        self.client, self.chat_model = _build_llm_client()
         self.max_tool_calls = int(os.getenv("MAX_TOOL_ITERATIONS", "3"))
         self.temperature = float(os.getenv("LLM_TEMPERATURE", "0.7"))
 
-        # Using the same embedder everywhere
-        self.embedder = AzureEmbedder()
+        # Embedder follows the same profile so dims stay consistent
+        # with whichever ChromaDB collection the retriever opens.
+        self.embedder = get_embedder()
         self.retriever = WaterDocRetriever()
         self.tools = [WATER_QUALITY_TOOL]
 
