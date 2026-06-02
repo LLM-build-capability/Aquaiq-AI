@@ -24,7 +24,7 @@ const proxy = new RadarProxyImpl(CONFIG_PATH)
 // This is the *single* place the metamodel appears across both tool schemas.
 // Trimmed for tokens — pretrained models already know `string`/`number`.
 
-const DSL_BOOTSTRAP = `
+export const DSL_BOOTSTRAP = `
 type Quadrant = 0|1|2|3  // 0=Models & Providers, 1=Infrastructure & Cloud, 2=Frameworks & Libraries, 3=Techniques & Patterns
 type Ring     = 0|1|2|3  // 0=ADOPT, 1=TRIAL, 2=ASSESS, 3=HOLD
 type Moved    = -1|0|1   // movement since previous radar
@@ -82,7 +82,7 @@ Example (multi-step in one call):
   radar.commit('add gpt-5-nano to RDE at TRIAL');
   return radar.getAssignment('rde', 'gpt-5-nano');`.trim()
 
-const TOOLS = [
+export const TOOLS = [
   {
     name: 'search',
     description: SEARCH_DESC,
