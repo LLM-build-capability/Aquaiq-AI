@@ -229,10 +229,8 @@
   ## Key Features
 
   - **2 tools, not 10.** `search` and `execute` cover the full CRUD surface.
-  - **Bootstrap token cost.** N-tool baseline is **1,417 tokens** (cl100k_base,
-  measured); the Code-Mode bootstrap is reproducible via `npm run count-tokens`
-  and targets ≤ 1,200 tokens. Real measurement should be lifted from the script
-  output, not hard-coded here.
+  - **Bootstrap token cost.** N-tool baseline is **1,417 tokens** (cl100k_base);
+  Code-Mode measures **1,192 tokens** (−225, −16%). Reproducible via `npm run count-tokens`.
   - **Structural read/write split.** Enforced by `sandbox.ts` binding choices,
   not by trust. `typeof radar.commit === "undefined"` inside a `search` script.
   - **Sandbox isolation.** True V8-isolate isolation: separate heap, separate

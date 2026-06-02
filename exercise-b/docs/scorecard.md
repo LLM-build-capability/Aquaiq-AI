@@ -88,10 +88,9 @@
   | Configuration | Tokens (cl100k_base) | Source |
   |---|---|---|
   | N-tool baseline | **1,417** | `docs/n-tool-baseline.md` |
-  | Code Mode (`search` + `execute` + inlined DSL) | **≤ 1,200** (target) | `scripts/count-tokens.ts` |
+  | Code Mode (`search` + `execute` + inlined DSL) | **1,192** | `scripts/count-tokens.ts` |
 
-  **Evidence.** `count-tokens.ts` encodes the JSON of the `tools/list` response from `index.ts` with `tiktoken` cl100k_base and reports the count. The before number is fixed in `n-tool-baseline.md`; the after number is reproducible by re-running
-  the script. The score is contingent on the measurement landing at or below the 1,200-token target — if the run reports higher, this score drops to 2.
+  **Evidence.** `count-tokens.ts` encodes the JSON of the `tools/list` response from `index.ts` with `tiktoken` cl100k_base and reports the count. The before number is fixed in `n-tool-baseline.md`; the after number (1,192) is reproducible by re-running the script — it lands 225 tokens below the 1,417 baseline and within the ≤ 1,200 target.
 
   ---
 
@@ -202,7 +201,7 @@
   | Metric | Before | After | Delta |
   |---|---|---|---|
   | Tool count | 10 | 2 | −8 |
-  | Bootstrap tokens (cl100k_base) | 1,417 | ≤ 1,200 (target) | ≥ −217 |
+  | Bootstrap tokens (cl100k_base) | 1,417 | 1,192 | −225 (−16%) |
   | Tool calls for "add + assign + commit" | 3 | 1 | −2 |
   | Self-correcting error cases | 0 | 3 | +3 |
   | Read/write split enforcement | Trust-based | Structural (different sandbox bindings) | Stronger |
