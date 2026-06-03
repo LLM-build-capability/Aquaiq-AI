@@ -4,3 +4,4 @@ rag-agent/vectors.json
 orchestrator/state.db
 dead-letter.jsonl
 *.db
+mcp-agent/exercise-b-server/dist/

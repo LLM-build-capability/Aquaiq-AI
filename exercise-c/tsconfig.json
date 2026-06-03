@@ -13,6 +13,7 @@
     "shared/**/*.ts",
     "registry/**/*.ts",
     "rag-agent/**/*.ts",
-    "orchestrator/**/*.ts"
+    "orchestrator/**/*.ts",
+    "mcp-agent/main.ts"
   ]
 }

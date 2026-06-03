@@ -11,13 +11,16 @@
     "registry": "node --import tsx/esm registry/main.ts",
     "rag-agent": "node --import tsx/esm rag-agent/main.ts",
     "orchestrator": "node --import tsx/esm orchestrator/main.ts",
+    "mcp-agent": "node --import tsx/esm mcp-agent/main.ts",
     "ingest": "node --import tsx/esm rag-agent/ingest.ts"
   },
   "dependencies": {
+    "@modelcontextprotocol/sdk": "1.29.0",
     "better-sqlite3": "^9.6.0",
     "dotenv": "^16.4.5",
     "express": "^4.19.2",
-    "openai": "^4.67.3",
+    "isolated-vm": "6.1.2",
+    "openai": "^4.104.0",
     "zod": "^3.23.8"
   },
   "devDependencies": {
