@@ -12,12 +12,12 @@ A user sends a natural-language query to the **Orchestrator**. The orchestrator 
 
 ## Processes
 
-| Process | Port | Capability | Owner |
-|---|---|---|---|
-| Registry | 8083 | agent discovery + heartbeat TTL | Premkumar |
-| RAG Agent | 8081 | `answer-from-corpus` | Deepak |
-| MCP Agent | 8082 | `propose-radar-change` | Pavitra |
-| Orchestrator | 8080 | `orchestrate` (user entry point) | Deepak |
+| Process | Port | Capability |
+|---|---|---|
+| Registry | 8083 | agent discovery + heartbeat TTL |
+| RAG Agent | 8081 | `answer-from-corpus` |
+| MCP Agent | 8082 | `propose-radar-change` |
+| Orchestrator | 8080 | `orchestrate` (user entry point) |
 
 ---
 
@@ -118,23 +118,22 @@ Intent classification logs include the **exact prompt** and **LLM response** —
 ```
 exercise-c/
 ├── shared/
-│   ├── envelope.ts        ← typed message envelope (Premkumar)
-│   └── logger.ts          ← structured JSON logger (Premkumar)
+│   ├── envelope.ts        ← typed message envelope
+│   └── logger.ts          ← structured JSON logger
 ├── registry/
-│   └── main.ts            ← capability registry :8083 (Premkumar)
+│   └── main.ts            ← capability registry :8083
 ├── rag-agent/
-│   ├── main.ts            ← RAG agent :8081 (Deepak)
-│   ├── ingest.ts          ← one-shot corpus embedder (Deepak)
+│   ├── main.ts            ← RAG agent :8081
+│   ├── ingest.ts          ← one-shot corpus embedder
 │   ├── vectors.json       ← auto-generated, gitignored
-│   └── data/              ← radar history markdown files (Deepak)
+│   └── data/              ← radar history markdown files
 ├── orchestrator/
-│   ├── main.ts            ← orchestrator :8080 (Deepak)
+│   ├── main.ts            ← orchestrator :8080
 │   └── state.db           ← auto-generated, gitignored
 ├── docs/
-│   ├── exercise-c-plan.md
-│   ├── topology-decision.md      ← Premkumar
-│   ├── observability-walkthrough.md ← Premkumar
-│   └── failure-modes.md          ← Pavitra
+│   ├── topology-decision.md
+│   ├── observability-walkthrough.md
+│   └── failure-modes.md
 ├── dead-letter.jsonl      ← auto-generated, gitignored
 ├── Makefile
 └── README.md
