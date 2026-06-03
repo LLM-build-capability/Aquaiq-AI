@@ -1,0 +1,6 @@
+node_modules/
+dist/
+rag-agent/vectors.json
+orchestrator/state.db
+dead-letter.jsonl
+*.db
