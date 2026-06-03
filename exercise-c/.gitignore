@@ -1,6 +1,7 @@
 node_modules/
 dist/
 rag-agent/vectors.json
+rag-agent/chroma_db/
 orchestrator/state.db
 dead-letter.jsonl
 *.db

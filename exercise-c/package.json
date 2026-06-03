@@ -9,10 +9,8 @@
     "build": "tsc --build",
     "check": "tsc --noEmit",
     "registry": "node --import tsx/esm registry/main.ts",
-    "rag-agent": "node --import tsx/esm rag-agent/main.ts",
     "orchestrator": "node --import tsx/esm orchestrator/main.ts",
-    "mcp-agent": "node --import tsx/esm mcp-agent/main.ts",
-    "ingest": "node --import tsx/esm rag-agent/ingest.ts"
+    "mcp-agent": "node --import tsx/esm mcp-agent/main.ts"
   },
   "dependencies": {
     "@modelcontextprotocol/sdk": "1.29.0",
