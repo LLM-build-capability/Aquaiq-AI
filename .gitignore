@@ -14,3 +14,14 @@ chroma_db/
 .streamlit
 
 .pytest_cache/
+
+# exercise-b
+exercise-b/node_modules/
+exercise-b/dist/
+
+# exercise-c
+exercise-c/node_modules/
+exercise-c/dist/
+exercise-c/**/*.db
+exercise-c/dead-letter.jsonl
+exercise-c/**/chroma_db/
