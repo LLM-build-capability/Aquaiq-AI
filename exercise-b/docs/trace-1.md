@@ -1,8 +1,15 @@
 # Worked Trace 1 — Self-Correcting Validation Round-Trip
 
-This trace demonstrates the three-error round-trip: the model emits broken code, the proxy throws a structured error naming what to do instead, and the model rewrites the call to succeed.
+This trace demonstrates the three-error round-trip: the model emits broken code, the proxy throws a structured `ProxyError` naming what to do instead, and the model rewrites the call to succeed.
 
 All output below is captured directly from `scripts/smoke.ts` running against a fresh copy of `data/config.json`.
+
+## Reproduce
+
+```bash
+cd exercise-b
+PATH="/opt/homebrew/opt/node@22/bin:$PATH" npx tsx scripts/smoke.ts
+```
 
 ---
 
@@ -28,7 +35,7 @@ error.message=technology 'this-tech-does-not-exist' not found in radar.
   'claude-opus-4-7-databricks' (use radar.listTechnologies() to see all).
 ```
 
-**Model reads the error message.** It now knows two things: (a) the tech doesn't exist yet, and (b) it should call `addTechnology` first. It rewrites:
+The error names (a) the missing id, (b) the call to create it, and (c) five existing alternatives. The model rewrites:
 
 ```js
 // execute() call — corrected retry
@@ -53,7 +60,7 @@ persisted to file=true
 
 ## Error 2 — Forbidden ADOPT → HOLD Demotion (Governance Rule)
 
-**Model's first attempt** (trying to skip governance steps):
+**Model's first attempt** (skipping governance steps):
 
 ```js
 // execute() call — attempt 1
@@ -72,7 +79,7 @@ error.message=demoting 'mcp-model-context-protocol' directly from ADOPT to HOLD 
   then ASSESS, then HOLD.
 ```
 
-**Model reads the error.** The error names the specific tech (`mcp-model-context-protocol`), the rule that was violated, and the exact next valid call. It rewrites:
+The error names the specific tech, the violated rule, and the exact next valid call. The model rewrites:
 
 ```js
 // execute() call — corrected retry (step 1 of incremental demotion)
@@ -110,7 +117,7 @@ error.message=id 'Not Kebab Case' is not valid kebab-case.
   Use only lowercase letters, digits, and hyphens, e.g. 'my-new-tool'.
 ```
 
-**Model reads the error.** The error gives a concrete example of a valid id. The model corrects:
+The error gives a concrete valid example. The model corrects:
 
 ```js
 // execute() call — corrected retry
@@ -130,8 +137,9 @@ result={"id":"not-kebab-case","label":"Bad id","quadrant":0}
 ## What Makes This Round-Trip Work
 
 Each `ProxyError` carries three pieces of information:
+
 1. **What failed** — the specific id, team, or ring that was invalid.
 2. **Why it failed** — the rule or constraint that was violated.
-3. **What to do instead** — a concrete alternative call the model can execute immediately.
+3. **What to do instead** — a concrete alternative call the model can run immediately.
 
-Without point 3, the model has no signal to recover from and typically either gives up or hallucinates a new attempt. With it, the retry is deterministic — the model copies the suggested call from the error message and succeeds on the first retry.
+Without the third piece, the model has no recovery signal and either gives up or hallucinates a new attempt. With it, the retry is deterministic — the model copies the suggested call from the error message and succeeds on the first retry. This is the core constraint-validation win that Code Mode delivers for Variant 2 domains.
