@@ -6,6 +6,9 @@ from datetime import datetime, timezone
 # Add the repo root to sys.path so src.aquaiq_ai.* imports work unchanged.
 # This file lives at exercise-c/rag-agent/main.py; repo root is two levels up.
 REPO_ROOT = os.path.abspath(os.path.join(os.path.dirname(__file__), "..", ".."))
+RAG_DIR = os.path.dirname(os.path.abspath(__file__))
+# aquaiq_ai/ sits alongside this script; add rag-agent/ so it is importable.
+sys.path.insert(0, RAG_DIR)
 sys.path.insert(0, REPO_ROOT)
 
 from dotenv import load_dotenv

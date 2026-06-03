@@ -14,6 +14,10 @@ import os
 import sys
 
 REPO_ROOT = os.path.abspath(os.path.join(os.path.dirname(__file__), "..", ".."))
+RAG_DIR = os.path.dirname(os.path.abspath(__file__))
+# aquaiq_ai/ sits alongside this script in rag-agent/; add rag-agent/ so it
+# is importable as a top-level package.
+sys.path.insert(0, RAG_DIR)
 sys.path.insert(0, REPO_ROOT)
 
 # Set env vars before importing Exercise A modules so they pick up the right
@@ -31,8 +35,8 @@ import re
 import chromadb
 from chromadb.config import Settings
 
-from src.aquaiq_ai.config import get_embedder, get_collection_name
-from src.aquaiq_ai.embedding_helper import OllamaEmbedder
+from aquaiq_ai.config import get_embedder, get_collection_name
+from aquaiq_ai.embedding_helper import OllamaEmbedder
 
 DATA_DIR = os.path.join(os.path.dirname(__file__), "data")
 
