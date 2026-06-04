@@ -26,6 +26,7 @@ os.environ.setdefault("CLOUD_COLLECTION_NAME", "radar_local")
 os.environ.setdefault("LLM_PROFILE", "local")
 
 import httpx
+from contextlib import asynccontextmanager
 from fastapi import FastAPI, Request
 from fastapi.responses import JSONResponse
 from pydantic import BaseModel
@@ -118,10 +119,8 @@ async def heartbeat_loop():
 # ---------------------------------------------------------------------------
 # App
 # ---------------------------------------------------------------------------
-app = FastAPI()
-
-@app.on_event("startup")
-async def startup():
+@asynccontextmanager
+async def lifespan(app: FastAPI):
     global agent
     log("INFO", "initialising WaterAgent",
         llm_profile=os.getenv("LLM_PROFILE"),
@@ -131,10 +130,10 @@ async def startup():
     log("INFO", "WaterAgent ready")
     await register()
     asyncio.create_task(heartbeat_loop())
-
-@app.on_event("shutdown")
-async def shutdown():
+    yield
     await deregister()
+
+app = FastAPI(lifespan=lifespan)
 
 @app.post("/invoke")
 async def invoke(request: Request):

@@ -16,7 +16,7 @@ interface AgentRecord {
 }
 
 // In-memory store — restart is a clean slate; agents re-register on next heartbeat
-const agents = new Map<string, AgentRecord>();
+export const agents = new Map<string, AgentRecord>();
 
 // Evict agents that missed 2 heartbeat cycles
 function evictStale() {
@@ -29,9 +29,9 @@ function evictStale() {
   }
 }
 
-setInterval(evictStale, 10_000);
+let evictTimer: NodeJS.Timeout | undefined;
 
-const app = express();
+export const app = express();
 app.use(express.json());
 
 // POST /register
@@ -119,6 +119,14 @@ app.get("/health", (_req: Request, res: Response) => {
   });
 });
 
-app.listen(PORT, () => {
-  log.info(`registry listening on :${PORT}`, { correlation_id: "none" });
-});
+const isMain = process.argv[1]?.endsWith("registry/main.ts") ||
+               process.argv[1]?.endsWith("registry/main.js");
+
+if (isMain) {
+  evictTimer = setInterval(evictStale, 10_000);
+  app.listen(PORT, () => {
+    log.info(`registry listening on :${PORT}`, { correlation_id: "none" });
+  });
+}
+
+export { evictTimer };

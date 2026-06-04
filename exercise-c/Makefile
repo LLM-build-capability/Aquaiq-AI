@@ -8,6 +8,7 @@
 #   make demo-change send a sample change query
 #   make check       typecheck all TypeScript
 #   make health      check all agents
+#   make test        run all tests (TypeScript + Python)
 
 NODE := /opt/homebrew/opt/node@22/bin/node
 NPM  := /opt/homebrew/opt/node@22/bin/npm
@@ -74,6 +75,14 @@ demo-change:
 .PHONY: check
 check:
 	PATH="/opt/homebrew/opt/node@22/bin:$$PATH" $(NPM) run --prefix . check
+
+.PHONY: test
+test:
+	@echo "=== TypeScript tests ==="
+	PATH="/opt/homebrew/opt/node@22/bin:$$PATH" $(NPM) run --prefix . test
+	@echo ""
+	@echo "=== Python tests ==="
+	$(PYTHON) -m pytest $(CURDIR)/tests/test_rag_agent.py -v
 
 .PHONY: health
 health:

@@ -10,7 +10,8 @@
     "check": "tsc --noEmit",
     "registry": "node --import tsx/esm registry/main.ts",
     "orchestrator": "node --import tsx/esm orchestrator/main.ts",
-    "mcp-agent": "node --import tsx/esm mcp-agent/main.ts"
+    "mcp-agent": "node --import tsx/esm mcp-agent/main.ts",
+    "test": "node --import tsx/esm --test tests/*.test.ts"
   },
   "dependencies": {
     "@modelcontextprotocol/sdk": "1.29.0",
@@ -25,6 +26,8 @@
     "@types/better-sqlite3": "^7.6.11",
     "@types/express": "^4.17.21",
     "@types/node": "^22.0.0",
+    "@types/supertest": "^7.2.0",
+    "supertest": "^7.2.2",
     "tsx": "^4.22.4",
     "typescript": "^5.5.3"
   }

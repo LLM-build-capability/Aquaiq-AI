@@ -13,6 +13,7 @@
     "shared/**/*.ts",
     "registry/**/*.ts",
     "orchestrator/**/*.ts",
-    "mcp-agent/main.ts"
+    "mcp-agent/main.ts",
+    "tests/**/*.ts"
   ]
 }
