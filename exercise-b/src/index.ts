@@ -10,21 +10,11 @@ import { dirname, join } from 'node:path'
 import { RadarProxyImpl } from './proxy.js'
 import { runInSandbox } from './sandbox.js'
 
-const __filename = fileURLToPath(import.meta.url)
-const __dirname = dirname(__filename)
-
-const CONFIG_PATH =
-  process.env.RADAR_CONFIG_PATH ?? join(__dirname, '..', 'data', 'config.json')
-
-// One proxy instance per server lifetime. State accumulates across execute()
-// calls until the model calls radar.commit(message), which writes the file.
-const proxy = new RadarProxyImpl(CONFIG_PATH)
-
 // ─── DSL bootstrap (placed once in the execute() tool description) ───────────
 // This is the *single* place the metamodel appears across both tool schemas.
 // Trimmed for tokens — pretrained models already know `string`/`number`.
 
-const DSL_BOOTSTRAP = `
+export const DSL_BOOTSTRAP = `
 type Quadrant = 0|1|2|3  // 0=Models & Providers, 1=Infrastructure & Cloud, 2=Frameworks & Libraries, 3=Techniques & Patterns
 type Ring     = 0|1|2|3  // 0=ADOPT, 1=TRIAL, 2=ASSESS, 3=HOLD
 type Moved    = -1|0|1   // movement since previous radar
@@ -82,7 +72,7 @@ Example (multi-step in one call):
   radar.commit('add gpt-5-nano to RDE at TRIAL');
   return radar.getAssignment('rde', 'gpt-5-nano');`.trim()
 
-const TOOLS = [
+export const TOOLS = [
   {
     name: 'search',
     description: SEARCH_DESC,
@@ -114,61 +104,75 @@ const TOOLS = [
 ]
 
 // ─── Server wiring ───────────────────────────────────────────────────────────
+// Guard startup behind an isMain check so count-tokens.ts can import TOOLS and
+// DSL_BOOTSTRAP from this file without spinning up the MCP server.
 
-const server = new Server(
-  { name: 'tech-radar-mcp', version: '0.1.0' },
-  { capabilities: { tools: {} } },
-)
+const __filename = fileURLToPath(import.meta.url)
+const __dirname = dirname(__filename)
 
-server.setRequestHandler(ListToolsRequestSchema, async () => ({ tools: TOOLS }))
+const isMain = process.argv[1] === __filename
 
-server.setRequestHandler(CallToolRequestSchema, async req => {
-  const { name, arguments: args } = req.params
-  const code = (args as { code?: string } | undefined)?.code ?? ''
+if (isMain) {
+  const CONFIG_PATH =
+    process.env.RADAR_CONFIG_PATH ?? join(__dirname, '..', 'data', 'config.json')
 
-  if (name !== 'search' && name !== 'execute') {
-    return {
-      content: [
-        {
-          type: 'text',
-          text: `Unknown tool '${name}'. Use 'search' (read-only) or 'execute' (read+write).`,
-        },
-      ],
-      isError: true,
+  // One proxy instance per server lifetime. State accumulates across execute()
+  // calls until the model calls radar.commit(message), which writes the file.
+  const proxy = new RadarProxyImpl(CONFIG_PATH)
+
+  const server = new Server(
+    { name: 'tech-radar-mcp', version: '0.1.0' },
+    { capabilities: { tools: {} } },
+  )
+
+  server.setRequestHandler(ListToolsRequestSchema, async () => ({ tools: TOOLS }))
+
+  server.setRequestHandler(CallToolRequestSchema, async req => {
+    const { name, arguments: args } = req.params
+    const code = (args as { code?: string } | undefined)?.code ?? ''
+
+    if (name !== 'search' && name !== 'execute') {
+      return {
+        content: [
+          {
+            type: 'text',
+            text: `Unknown tool '${name}'. Use 'search' (read-only) or 'execute' (read+write).`,
+          },
+        ],
+        isError: true,
+      }
     }
-  }
 
-  const mode = name === 'execute' ? 'write' : 'read'
-  const r = await runInSandbox(code, proxy, mode)
+    const mode = name === 'execute' ? 'write' : 'read'
+    const r = await runInSandbox(code, proxy, mode)
 
-  if (!r.ok) {
-    const text = `${r.error?.name ?? 'Error'}: ${r.error?.message ?? 'unknown failure'}`
+    if (!r.ok) {
+      const text = `${r.error?.name ?? 'Error'}: ${r.error?.message ?? 'unknown failure'}`
+      const logs = r.logs.length ? `\n--- console ---\n${r.logs.join('\n')}` : ''
+      return {
+        content: [{ type: 'text', text: text + logs }],
+        isError: true,
+      }
+    }
+
+    const body =
+      r.result === undefined
+        ? '(no return value — use `return` to surface a result)'
+        : safeJson(r.result)
     const logs = r.logs.length ? `\n--- console ---\n${r.logs.join('\n')}` : ''
-    return {
-      content: [{ type: 'text', text: text + logs }],
-      isError: true,
+    return { content: [{ type: 'text', text: body + logs }] }
+  })
+
+  function safeJson(x: unknown): string {
+    try {
+      return JSON.stringify(x, null, 2)
+    } catch {
+      return String(x)
     }
   }
 
-  const body =
-    r.result === undefined
-      ? '(no return value — use `return` to surface a result)'
-      : safeJson(r.result)
-  const logs = r.logs.length ? `\n--- console ---\n${r.logs.join('\n')}` : ''
-  return { content: [{ type: 'text', text: body + logs }] }
-})
-
-function safeJson(x: unknown): string {
-  try {
-    return JSON.stringify(x, null, 2)
-  } catch {
-    return String(x)
-  }
+  const transport = new StdioServerTransport()
+  await server.connect(transport)
+  // Errors during stdio go to stderr; stdout is reserved for MCP framing.
+  process.stderr.write(`[tech-radar-mcp] connected — config: ${CONFIG_PATH}\n`)
 }
-
-const transport = new StdioServerTransport()
-await server.connect(transport)
-// Errors during stdio go to stderr; stdout is reserved for MCP framing.
-process.stderr.write(
-  `[tech-radar-mcp] connected — config: ${CONFIG_PATH}\n`,
-)
