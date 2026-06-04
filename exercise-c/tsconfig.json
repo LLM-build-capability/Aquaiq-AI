@@ -9,5 +9,10 @@
     "rootDir": ".",
     "skipLibCheck": true
   },
-  "include": ["shared/**/*.ts", "registry/**/*.ts"]
+  "include": [
+    "shared/**/*.ts",
+    "registry/**/*.ts",
+    "rag-agent/**/*.ts",
+    "orchestrator/**/*.ts"
+  ]
 }
