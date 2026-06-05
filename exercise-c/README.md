@@ -67,79 +67,12 @@ The **Tech Radar Concierge** is a four-process A2A system that lets a user ask n
 
 ## Learning Objectives
 
-By the end of Exercise C you can:
-
-1. Implement the **A2A protocol minimally** — agent discovery, capability advertising, message envelope, idempotency keys, correlation IDs — and explain each field's job in one sentence.
-2. Stand up an **Agent Registry** with register, deregister, query-by-capability, health, and heartbeat/TTL eviction.
-3. Compose **at least three agents** into an end-to-end workflow — each doing something the others cannot.
-4. Choose **orchestration vs choreography** and defend the choice across five trade-off axes: cognitive load, blast radius, debuggability, latency, team-size scaling. See `docs/topology-decision.md`.
-5. Wire **observability end-to-end** — every agent-to-agent message is traceable; "why did agent X call agent Y?" is answerable from logs alone, no re-running.
-6. Handle failure honestly: timeouts, retries with idempotency, partial completion, poison messages. See `docs/failure-modes.md`.
-
----
-
-## Scenario and Composition Justification
-
-**Chosen scenario: Tech Radar Concierge**
-
-| Agent | Capability advertised | Unique job |
+| Process | Port | Capability |
 |---|---|---|
-| **RAG Agent** | `answer-from-corpus` | Answers *why* questions from a corpus of radar history documents and ADRs — knowledge no other agent has |
-| **MCP Agent** | `propose-radar-change` | Translates natural-language change requests into JavaScript execute() calls against Exercise B's MCP server — mutation that the RAG agent structurally cannot do (read-only) |
-| **Orchestrator** | `orchestrate` | Classifies intent, discovers agents via the registry, dispatches, retries, and persists workflow state to SQLite — coordination no individual agent can do without becoming a monolith |
-
-This scenario was chosen because:
-- The **read-vs-write split** is genuine: the RAG agent's corpus is about radar *history*, the MCP agent modifies *current* radar state. Neither can do the other's job.
-- There is a **real artifact** at the end: a mutated `config.json` with an audit trail in structured logs.
-- The **intent classification** step is non-trivial enough to demonstrate LLM-driven routing decisions that must be logged for observability.
-
-Each agent does something the others *cannot*. Doing it as a single monolithic agent would be worse — the LLM would need to handle RAG retrieval, radar mutation via a code execution sandbox, and workflow coordination simultaneously.
-
----
-
-## System Architecture
-
-```text
-                         User
-                           |
-                  POST /request { query }
-                           |
-                           v
-              +----------------------------+
-              |       Orchestrator          |
-              |       :8080                 |
-              |  1. classifyIntent (LLM)    |
-              |  2. registry lookup         |
-              |  3. dispatch with retries   |
-              |  4. persist to SQLite       |
-              +----------------------------+
-                     /              \
-                    /                \
-     intent=explain                   intent=change
-                  /                    \
-                 v                      v
-  +---------------------+    +---------------------+
-  |   RAG Agent :8081   |    |   MCP Agent :8082   |
-  |   (Python/FastAPI)  |    |   (Node/Express)    |
-  |   Exercise A agent  |    |   Wraps Ex B MCP    |
-  |   corpus = radar    |    |   server via stdio  |
-  |   history + ADRs    |    |   subprocess        |
-  +---------------------+    +---------------------+
-           |                           |
-           |                           |
-           +----------+    +-----------+
-                      |    |
-                      v    v
-            +----------------------+
-            |  Registry :8083      |
-            |  - register          |
-            |  - deregister        |
-            |  - query/capability  |
-            |  - health + TTL      |
-            +----------------------+
-```
-
-All four processes run on `localhost`. The registry is started first; agents register on startup and send heartbeats every 20 seconds. The registry evicts agents that miss 2 consecutive heartbeat cycles (40 s TTL).
+| Registry | 8083 | agent discovery + heartbeat TTL |
+| RAG Agent | 8081 | `answer-from-corpus` |
+| MCP Agent | 8082 | `propose-radar-change` |
+| Orchestrator | 8080 | `orchestrate` (user entry point) |
 
 ---
 
@@ -630,52 +563,26 @@ These map to the spec's Stretch Challenges:
 
 ## Resources
 
-**A2A protocol references**
-- [Google A2A Protocol](https://github.com/google/A2A) — public reference protocol
-- Anthropic MCP — the protocol each agent uses internally (Exercise B)
-
-**Orchestration / choreography building blocks**
-- [Temporal](https://temporal.io/) — production-grade orchestration; pattern reference even if not used
-- [Azure Durable Functions](https://learn.microsoft.com/en-us/azure/azure-functions/durable/) — orchestration pattern reference
-- [NATS](https://nats.io/) / [Redis Streams](https://redis.io/docs/data-types/streams/) — choreography substrate
-
-**Observability**
-- [OpenTelemetry](https://opentelemetry.io/) — for graduating beyond structured JSON logs
-- [Jaeger](https://www.jaegertracing.io/) / [Tempo](https://grafana.com/oss/tempo/) — trace backends
-
-**Optional starter library**
-- [`ollama2a`](https://pypi.org/project/ollama2a/) — evaluated and not used; see Limitations
-
----
-
-## FAQ / Common Pitfalls
-
-**Q: My orchestrator is just a Python function with three `if` branches. Is that enough?**
-No. State must survive a process restart. A function with `if` branches loses both the workflow state and the retry context. Either persist to SQLite/Redis, or use a real workflow engine.
-
-**Q: Do I need OpenTelemetry, or are JSON logs OK?**
-JSON logs are fine *if* a `correlation_id` filter rebuilds the timeline and a human can answer "why did X call Y" in under 30 seconds. This system uses structured JSON logs.
-
-**Q: Why does `make up` stagger with `sleep` commands?**
-The registry must be up before agents try to register. The RAG agent takes ~3 s to initialise `WaterAgent` before it can register. The `sleep 2` and `sleep 3` in the Makefile give each process enough head start.
-
-**Q: Should choreography agents be able to subscribe to any event?**
-Architecturally, no — constrain subscriptions to declared capabilities even if your broker doesn't enforce it. This system uses a capability registry rather than broadcast subscriptions.
-
-**Q: My MCP server from Exercise B is single-tenant. Can the A2A agents share it?**
-Yes for the exercise. The MCP agent spawns one MCP subprocess per process lifetime. Concurrent `/invoke` calls to the MCP agent would share that subprocess and could interleave — documented as a limitation.
-
-**Q: How big is "too big" for the demo?**
-If a single user request takes more than ~30 seconds end-to-end on a happy path, the scenario is too big. Slim the corpus or reduce LLM round-trips. This system typically responds in 5–30 seconds depending on the LLM call latency.
-
----
-
-## Acknowledgements
-
-- [Google A2A Protocol](https://github.com/google/A2A) — reference A2A contract
-- [Model Context Protocol](https://modelcontextprotocol.io/) — Exercise B's MCP server is what the MCP agent wraps
-- [FastAPI](https://fastapi.tiangolo.com/) — RAG agent HTTP service
-- [Express](https://expressjs.com/) + [Zod](https://zod.dev/) — orchestrator, registry, and MCP agent
-- [`better-sqlite3`](https://github.com/WiseLibs/better-sqlite3) — orchestrator workflow state
-- Exercise A and Exercise B teams for the reusable agent and MCP server
-- Bootcamp lead for the A2A exercise design and infrastructure
+```
+exercise-c/
+├── shared/
+│   ├── envelope.ts        ← typed message envelope
+│   └── logger.ts          ← structured JSON logger
+├── registry/
+│   └── main.ts            ← capability registry :8083
+├── rag-agent/
+│   ├── main.ts            ← RAG agent :8081
+│   ├── ingest.ts          ← one-shot corpus embedder
+│   ├── vectors.json       ← auto-generated, gitignored
+│   └── data/              ← radar history markdown files
+├── orchestrator/
+│   ├── main.ts            ← orchestrator :8080
+│   └── state.db           ← auto-generated, gitignored
+├── docs/
+│   ├── topology-decision.md
+│   ├── observability-walkthrough.md
+│   └── failure-modes.md
+├── dead-letter.jsonl      ← auto-generated, gitignored
+├── Makefile
+└── README.md
+```
