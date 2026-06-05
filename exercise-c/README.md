@@ -560,29 +560,3 @@ These map to the spec's Stretch Challenges:
 7. **Persistent registry** — Back the in-memory agent store with Redis or SQLite so a registry restart doesn't evict all agents.
 
 ---
-
-## Resources
-
-```
-exercise-c/
-├── shared/
-│   ├── envelope.ts        ← typed message envelope
-│   └── logger.ts          ← structured JSON logger
-├── registry/
-│   └── main.ts            ← capability registry :8083
-├── rag-agent/
-│   ├── main.ts            ← RAG agent :8081
-│   ├── ingest.ts          ← one-shot corpus embedder
-│   ├── vectors.json       ← auto-generated, gitignored
-│   └── data/              ← radar history markdown files
-├── orchestrator/
-│   ├── main.ts            ← orchestrator :8080
-│   └── state.db           ← auto-generated, gitignored
-├── docs/
-│   ├── topology-decision.md
-│   ├── observability-walkthrough.md
-│   └── failure-modes.md
-├── dead-letter.jsonl      ← auto-generated, gitignored
-├── Makefile
-└── README.md
-```
