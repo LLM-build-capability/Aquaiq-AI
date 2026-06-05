@@ -10,7 +10,7 @@
     "smoke": "tsx scripts/smoke.ts"
   },
   "engines": {
-    "node": ">=22"
+    "node": ">=22 <26"
   },
   "dependencies": {
     "@modelcontextprotocol/sdk": "1.29.0",
